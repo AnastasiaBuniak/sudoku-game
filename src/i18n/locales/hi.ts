@@ -1,0 +1,53 @@
+import type { TranslationTree } from '../types';
+
+/** Hindi — 3rd most spoken worldwide; Sudoku growing fast in India. */
+const hi: TranslationTree = {
+  brand: {
+    tagline: 'बच्चों के लिए नरम पहेलियाँ',
+    a11yBoard: 'Gummy Sudoku कैंडी बोर्ड',
+  },
+  home: {
+    continue: 'जारी रखें',
+    continuePuzzle: '%{level} पहेली',
+    newPuzzle: 'नई पहेली',
+    play: 'खेलें',
+    chooseLevel: 'स्तर चुनें',
+    unlockPrompt: '%{next} खोलने के लिए %{count} और %{level} पहेलियाँ जीतें!',
+  },
+  levels: {
+    easy: 'आसान',
+    medium: 'मध्यम',
+    hard: 'कठिन',
+    profi: 'प्रो',
+    master: 'मास्टर',
+  },
+  game: {
+    chances: 'मौके',
+    chancesLeft: '%{count} मौके बचे',
+    erase: 'मिटाएँ',
+    newGame: 'नया खेल',
+    nice: 'शाबाश!',
+    levelUnlocked: '%{level} स्तर खुला!',
+  },
+  win: {
+    title: 'वाह!',
+    message: 'आपने पहेली हल कर ली!',
+    playAgain: 'फिर से खेलें',
+    backHome: 'होम पर जाएँ',
+    keepLooking: 'देखते रहें',
+  },
+  gameOver: {
+    title: 'मौके खत्म!',
+    message: 'यह पहेली थोड़ी मुश्किल थी। नई कोशिश करें?',
+    tryAgain: 'फिर कोशिश करें',
+    backHome: 'होम पर जाएँ',
+  },
+  a11y: {
+    backHome: 'होम पर वापस जाएँ',
+    mute: 'आवाज़ बंद करें',
+    unmute: 'आवाज़ चालू करें',
+    language: 'भाषा',
+  },
+};
+
+export default hi;
