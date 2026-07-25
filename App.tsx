@@ -115,6 +115,9 @@ function AppContent() {
   const { screen, mode, selectedLevels, game } = session;
   const selectedLevel = selectedLevels[mode];
   const progress = getProgress(mode);
+  // Scope "Continue" to the mode being viewed so switching modes shows that
+  // mode's unfinished puzzle (if any) rather than another mode's game.
+  const canContinueMode = canContinue && game?.mode === mode;
 
   const [selected, setSelected] = useState<{ row: number; col: number } | null>(null);
   const [unlockMessage, setUnlockMessage] = useState<string | null>(null);
@@ -367,8 +370,8 @@ function AppContent() {
               mode={mode}
               progress={progress}
               selectedLevel={selectedLevel}
-              canContinue={canContinue}
-              continueLevel={canContinue && game ? game.levelId : null}
+              canContinue={canContinueMode}
+              continueLevel={canContinueMode && game ? game.levelId : null}
               onSelectMode={(nextMode) => {
                 ensureMusicPlaying();
                 setMode(nextMode);
