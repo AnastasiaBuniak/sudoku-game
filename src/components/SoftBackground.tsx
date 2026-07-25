@@ -52,7 +52,7 @@ function CandyStar({
 
 export function SoftBackground() {
   return (
-    <>
+    <View style={styles.root} pointerEvents="none">
       <LinearGradient
         colors={[colors.bgTop, colors.bgMid, colors.bgBottom]}
         locations={[0, 0.45, 1]}
@@ -98,11 +98,15 @@ export function SoftBackground() {
           ]}
         />
       ))}
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  root: {
+    ...StyleSheet.absoluteFill,
+    overflow: 'hidden',
+  },
   cloud: {
     position: 'absolute',
     borderRadius: 999,

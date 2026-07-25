@@ -34,6 +34,10 @@ const LEVEL_PALETTES = [
   { bg: colors.masterBg, border: colors.masterBorder, text: colors.masterText },
 ];
 
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
 export function HomeScreen({
   mode,
   progress,
@@ -53,6 +57,21 @@ export function HomeScreen({
   const ctaMaxWidth = Math.min(layout.boardSize || 340, layout.contentMaxWidth);
   const levelLabel = (level: string) => t(`levels.${level}`);
 
+  // Top-anchor with a small screen-scaled inset so tall phones aren't glued to
+  // the status bar, but mode/content height changes never re-center the page.
+  const topInset = layout.isCompact
+    ? layout.pagePaddingY
+    : Math.round(clamp(layout.height * 0.035, 16, layout.isTablet ? 40 : 28));
+
+  // Reserve room for optional rows so Continue / unlock / level-count changes
+  // don't shove neighbors around. Primary slot uses Continue's taller size
+  // (label + subtitle) even when only "Play" is shown.
+  const primaryCtaMinHeight = Math.round(88 * layout.scale);
+  const secondaryCtaMinHeight = Math.round(52 * layout.scale);
+  const unlockSlotMinHeight = Math.round(64 * layout.fontScale);
+  const levelRowHeight = Math.round((layout.isCompact ? 44 : 48) * layout.scale);
+  const levelsGridMinHeight = levelRowHeight * 2 + 10;
+
   return (
     <View
       style={[
@@ -60,17 +79,33 @@ export function HomeScreen({
         {
           maxWidth: Math.min(layout.contentMaxWidth, layout.width - layout.pagePaddingX * 2),
           gap: layout.gap + 6,
-          paddingVertical: layout.pagePaddingY,
+          paddingTop: topInset,
+          paddingBottom: layout.pagePaddingY,
         },
       ]}
     >
       <View style={styles.brand}>
-        <Image
-          source={require('../../assets/icon.png')}
-          style={{ width: layout.heroSize, height: layout.heroSize, marginBottom: 4 }}
-          resizeMode="contain"
+        <View
+          style={{
+            width: layout.heroSize,
+            height: layout.heroSize,
+            marginBottom: 4,
+          }}
           accessibilityLabel={t('brand.a11yBoard')}
-        />
+          accessible
+        >
+          {/* Keep both heroes mounted so mode switches don't reload/remeasure. */}
+          <Image
+            source={require('../../assets/icon.png')}
+            style={[styles.heroImage, mode !== 'numbers' && styles.heroImageHidden]}
+            resizeMode="contain"
+          />
+          <Image
+            source={require('../../assets/icon-animals.png')}
+            style={[styles.heroImage, mode !== 'animals' && styles.heroImageHidden]}
+            resizeMode="contain"
+          />
+        </View>
         <Text style={[styles.title, { fontSize: layout.titleSize }]}>{brand.name}</Text>
         <Text style={[styles.tagline, { fontSize: Math.round(16 * layout.fontScale) }]}>
           {t('brand.tagline')}
@@ -96,57 +131,76 @@ export function HomeScreen({
       </View>
 
       <View style={styles.actions}>
-        {canContinue && continueLevel ? (
-          <PressableScale
-            onPress={onContinue}
-            style={[styles.playButton, { maxWidth: ctaMaxWidth }]}
-            scaleTo={0.97}
-          >
-            <Text style={[styles.playText, { fontSize: layout.buttonFontSize }]}>
-              {t('home.continue')}
-            </Text>
-            <Text style={styles.playSubtext}>
-              {t('home.continuePuzzle', { level: levelLabel(continueLevel) })}
-            </Text>
-          </PressableScale>
-        ) : null}
-
+        {/* Primary CTA slot stays put: Continue when available, otherwise Play. */}
         <PressableScale
-          onPress={onPlay}
-          disabled={!canPlay}
+          onPress={canContinue ? onContinue : onPlay}
+          disabled={!canContinue && !canPlay}
           style={[
-            canContinue ? styles.secondaryPlayButton : styles.playButton,
-            { maxWidth: ctaMaxWidth },
-            !canPlay && styles.playDisabled,
+            styles.playButton,
+            { maxWidth: ctaMaxWidth, minHeight: primaryCtaMinHeight },
+            !canContinue && !canPlay && styles.playDisabled,
           ]}
           scaleTo={0.97}
         >
-          <Text
-            style={[
-              styles.playText,
-              { fontSize: canContinue ? Math.round(18 * layout.fontScale) : layout.buttonFontSize },
-              canContinue && styles.secondaryPlayText,
-            ]}
-          >
-            {canContinue ? t('home.newPuzzle') : t('home.play')}
-          </Text>
+          {canContinue && continueLevel ? (
+            <>
+              <Text style={[styles.playText, { fontSize: layout.buttonFontSize }]}>
+                {t('home.continue')}
+              </Text>
+              <Text style={styles.playSubtext}>
+                {t('home.continuePuzzle', { level: levelLabel(continueLevel) })}
+              </Text>
+            </>
+          ) : (
+            <Text style={[styles.playText, { fontSize: layout.buttonFontSize }]}>
+              {t('home.play')}
+            </Text>
+          )}
         </PressableScale>
+
+        {/* Secondary slot always reserved so levels don't jump when Continue appears. */}
+        <View style={[styles.secondaryCtaSlot, { minHeight: secondaryCtaMinHeight }]}>
+          {canContinue ? (
+            <PressableScale
+              onPress={onPlay}
+              disabled={!canPlay}
+              style={[
+                styles.secondaryPlayButton,
+                { maxWidth: ctaMaxWidth },
+                !canPlay && styles.playDisabled,
+              ]}
+              scaleTo={0.97}
+            >
+              <Text
+                style={[
+                  styles.playText,
+                  styles.secondaryPlayText,
+                  { fontSize: Math.round(18 * layout.fontScale) },
+                ]}
+              >
+                {t('home.newPuzzle')}
+              </Text>
+            </PressableScale>
+          ) : null}
+        </View>
       </View>
 
       <View style={styles.levelsBlock}>
         <Text style={styles.levelsHeading}>{t('home.chooseLevel')}</Text>
-        {nextUnlock ? (
-          <View style={[styles.unlockBanner, { maxWidth: Math.min(360, layout.contentMaxWidth) }]}>
-            <Text style={styles.unlockBannerText}>
-              {t('home.unlockPrompt', {
-                count: nextUnlock.remaining,
-                level: levelLabel(nextUnlock.requiredLevel.id),
-                next: levelLabel(nextUnlock.level.id),
-              })}
-            </Text>
-          </View>
-        ) : null}
-        <View style={styles.levelsGrid}>
+        <View style={[styles.unlockSlot, { minHeight: unlockSlotMinHeight }]}>
+          {nextUnlock ? (
+            <View style={[styles.unlockBanner, { maxWidth: Math.min(360, layout.contentMaxWidth) }]}>
+              <Text style={styles.unlockBannerText}>
+                {t('home.unlockPrompt', {
+                  count: nextUnlock.remaining,
+                  level: levelLabel(nextUnlock.requiredLevel.id),
+                  next: levelLabel(nextUnlock.level.id),
+                })}
+              </Text>
+            </View>
+          ) : null}
+        </View>
+        <View style={[styles.levelsGrid, { minHeight: levelsGridMinHeight }]}>
           {config.levels.map((level, index) => {
             const unlocked = isLevelUnlocked(config, progress, level.id);
             const active = unlocked && level.id === selectedLevel;
@@ -195,15 +249,22 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     gap: spacing.xl,
-    paddingVertical: spacing.md,
     overflow: 'hidden',
   },
   brand: {
     width: '100%',
     alignItems: 'center',
     gap: spacing.sm,
+  },
+  heroImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
+  },
+  heroImageHidden: {
+    opacity: 0,
   },
   title: {
     fontFamily: fonts.display,
@@ -267,6 +328,11 @@ const styles = StyleSheet.create({
     paddingVertical: 22,
     ...shadows.soft,
   },
+  secondaryCtaSlot: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   secondaryPlayButton: {
     width: '86%',
     maxWidth: '100%',
@@ -303,7 +369,7 @@ const styles = StyleSheet.create({
   },
   levelsBlock: {
     width: '100%',
-    gap: spacing.md,
+    gap: spacing.sm,
     alignItems: 'center',
   },
   levelsHeading: {
@@ -311,6 +377,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '800',
     color: colors.ink,
+  },
+  unlockSlot: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   unlockBanner: {
     width: '100%',
@@ -335,6 +406,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
+    alignContent: 'flex-start',
     gap: 10,
   },
   levelButton: {

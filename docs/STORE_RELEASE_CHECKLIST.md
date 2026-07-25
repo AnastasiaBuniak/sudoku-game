@@ -17,18 +17,12 @@ Target: **general Puzzle**, age **4+**, no Kids Category. Ads later.
 5. After a minute, open:
    `https://anastasiabuniak.github.io/sudoku-game/`
 6. Use that URL in App Store Connect + Play Console
-7. Replace `REPLACE_WITH_YOUR_EMAIL` in `docs/index.html` before submit
+7. Contact email: `visadayscalculator@gmail.com` (also use in store listing support/privacy contacts)
 
 ## Your actions (required)
 1. **PostHog** — confirm `.env` has API key; events visible in Live feed
-2. **Expo account**
-   ```bash
-   npm i -g eas-cli
-   eas login
-   eas init
-   ```
-   This writes `extra.eas.projectId` (and usually `owner`) into `app.json`
-3. **Host privacy policy** — see GitHub Pages steps above
+2. **Expo account** — done if project is linked in `app.json`
+3. **Host privacy policy** — GitHub Pages (confirm live URL)
 4. **Apple Developer** + **Google Play Console** accounts
 5. Create store listings (screenshots, description, category Puzzle, 4+)
 6. Fill App Privacy / Data safety to match: anonymous analytics via PostHog; no ads yet

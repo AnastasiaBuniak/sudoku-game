@@ -12,8 +12,9 @@ type Props = {
 
 export function MuteButton({ muted, onToggle }: Props) {
   const { hitSize, insets, fontScale } = useLayoutMetrics();
-  const { t, isRtl } = useI18n();
+  const { t } = useI18n();
 
+  // Always top-right so it never overlaps the back / language controls in RTL.
   return (
     <PressableScale
       onPress={onToggle}
@@ -24,9 +25,7 @@ export function MuteButton({ muted, onToggle }: Props) {
         styles.button,
         {
           top: Math.max(8, insets.top + 4),
-          ...(isRtl
-            ? { left: Math.max(12, insets.left + 10) }
-            : { right: Math.max(12, insets.right + 10) }),
+          right: Math.max(12, insets.right + 10),
           width: hitSize,
           height: hitSize,
         },

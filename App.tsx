@@ -362,6 +362,8 @@ function AppContent() {
               paddingTop: layout.pagePaddingY + (onGameScreen ? layout.hitSize : 0),
               paddingBottom: layout.pagePaddingY + Math.max(layout.insets.bottom, 8),
               gap: layout.gap,
+              // Home is top-anchored so mode/content height changes don't re-center.
+              justifyContent: onGameScreen ? 'center' : 'flex-start',
             },
           ]}
         >
@@ -471,6 +473,7 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: colors.bgMid,
+    overflow: 'hidden',
   },
   safeArea: {
     flex: 1,
