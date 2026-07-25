@@ -32,7 +32,7 @@ const ar: TranslationTree = {
   win: {
     title: 'حلو!',
     message: 'لقد حللت اللغز!',
-    playAgain: 'العب مجدداً',
+    playNext: 'العب التالي',
     backHome: 'العودة للرئيسية',
     keepLooking: 'تابع النظر',
   },

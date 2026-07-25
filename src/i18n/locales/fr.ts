@@ -32,7 +32,7 @@ const fr: TranslationTree = {
   win: {
     title: 'Sucré !',
     message: 'Tu as résolu le puzzle !',
-    playAgain: 'Rejouer',
+    playNext: 'Partie suivante',
     backHome: "Retour à l'accueil",
     keepLooking: 'Continuer à regarder',
   },

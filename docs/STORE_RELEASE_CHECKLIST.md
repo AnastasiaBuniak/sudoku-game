@@ -24,7 +24,12 @@ Target: **general Puzzle**, age **4+**, no Kids Category. Ads later.
 2. **Expo account** — done if project is linked in `app.json`
 3. **Host privacy policy** — GitHub Pages (confirm live URL)
 4. **Apple Developer** + **Google Play Console** accounts
-5. Create store listings (screenshots, description, category Puzzle, 4+)
+5. Create store listings from prepared assets in [`store/`](../store/README.md)
+   - Icon: `store/icon/app-icon-1024-opaque.png` (Apple) / `app-icon-1024.png` (Play)
+   - Screenshots: `store/screenshots/{iphone,ipad,android}/`
+   - Play feature graphic: `store/feature-graphic/google-play-feature-1024x500.png`
+   - Copy: `store/copy/` (short + long description, Apple subtitle/keywords)
+   - Category **Puzzle**, age **4+**
 6. Fill App Privacy / Data safety to match: anonymous analytics via PostHog; no ads yet
 7. Internal builds
    ```bash

@@ -33,8 +33,8 @@ import { usePersistedSession } from './src/hooks/usePersistedSession';
 import { track } from './src/analytics';
 import { AnalyticsProvider } from './src/analytics/AnalyticsProvider';
 import { I18nProvider, useI18n } from './src/i18n/I18nProvider';
-import { borders, brand, colors, fonts, radii, spacing } from './src/theme';
-import { getLevelConfig, getModeConfig, type GameMode } from './src/game/modes';
+import { borders, brand, colors, fonts, getLevelPalette, radii, spacing } from './src/theme';
+import { getLevelConfig, getLevelIndex, getModeConfig, type GameMode } from './src/game/modes';
 import { isLevelUnlocked } from './src/utils/levels';
 import { MAX_MISTAKES, type PersistedGame } from './src/utils/storage';
 import {
@@ -97,12 +97,14 @@ function AppContent() {
   const layout = useLayoutMetrics();
   const { t, ready: localeReady, locale } = useI18n();
 
-  const { muted, toggleMute, playCorrect, ensureMusicPlaying } = useGameAudio();
+  const { muted, toggleMute, playCorrect, playWrong, playErase, ensureMusicPlaying } =
+    useGameAudio();
   const { getProgress, ready: progressReady, completeGame } = useLevelProgress();
   const {
     session,
     ready: sessionReady,
     canContinue,
+    getSession,
     setScreen,
     setMode,
     setSelectedLevel,
@@ -216,12 +218,20 @@ function AppContent() {
     setScreen('game');
   }, [canContinue, ensureMusicPlaying, game, locale, setScreen]);
 
-  const handlePlay = useCallback(() => {
-    const config = getModeConfig(mode);
-    if (!isLevelUnlocked(config, progress, selectedLevel)) return;
-    ensureMusicPlaying();
-    startFreshGame(mode, selectedLevel);
-  }, [ensureMusicPlaying, mode, progress, selectedLevel, startFreshGame]);
+  const handlePlay = useCallback(
+    (levelId?: string) => {
+      // Read the latest session so a just-tapped level wins over a stale render.
+      const current = getSession();
+      const playMode = current.mode;
+      const playLevel = levelId ?? current.selectedLevels[playMode];
+      const playProgress = getProgress(playMode);
+      const config = getModeConfig(playMode);
+      if (!isLevelUnlocked(config, playProgress, playLevel)) return;
+      ensureMusicPlaying();
+      startFreshGame(playMode, playLevel);
+    },
+    [ensureMusicPlaying, getProgress, getSession, startFreshGame],
+  );
 
   useEffect(() => {
     if (!game?.won || game.winCounted || winHandledRef.current) return;
@@ -264,10 +274,15 @@ function AppContent() {
     let mistakesLeft = game.mistakesLeft;
     let lost = false;
 
-    if (value !== 0 && value !== game.solution[row][col]) {
+    if (value === 0) {
+      if (previous !== 0) {
+        void playErase();
+      }
+    } else if (value !== game.solution[row][col]) {
       mistakesLeft = Math.max(0, mistakesLeft - 1);
       lost = mistakesLeft === 0;
       setCheer(null);
+      void playWrong();
       track({
         name: 'cell_wrong',
         props: {
@@ -278,7 +293,7 @@ function AppContent() {
           chances_left: mistakesLeft,
         },
       });
-    } else if (value !== 0 && value === game.solution[row][col]) {
+    } else {
       void playCorrect();
       track({
         name: 'cell_correct',
@@ -320,6 +335,9 @@ function AppContent() {
   };
 
   const onGameScreen = screen === 'game' && Boolean(game);
+  const levelPalette = game
+    ? getLevelPalette(getLevelIndex(game.mode, game.levelId))
+    : getLevelPalette(0);
 
   if (!ready) {
     return (
@@ -385,7 +403,7 @@ function AppContent() {
                 track({ name: 'level_selected', props: { mode, level, locale } });
               }}
               onContinue={handleContinue}
-              onPlay={handlePlay}
+              onPlay={(levelId) => handlePlay(levelId)}
             />
           ) : (
             <View
@@ -401,8 +419,18 @@ function AppContent() {
               <View style={styles.header}>
                 <Text style={[styles.title, { fontSize: layout.playTitleSize }]}>{brand.name}</Text>
                 <View style={styles.headerMeta}>
-                  <View style={styles.subtitleChip}>
-                    <Text style={styles.subtitle}>{t(`levels.${game.levelId}`)}</Text>
+                  <View
+                    style={[
+                      styles.subtitleChip,
+                      {
+                        backgroundColor: levelPalette.bg,
+                        borderColor: levelPalette.border,
+                      },
+                    ]}
+                  >
+                    <Text style={[styles.subtitle, { color: levelPalette.text }]}>
+                      {t(`levels.${game.levelId}`)}
+                    </Text>
                   </View>
                   <MistakesCounter mistakesLeft={game.mistakesLeft} />
                 </View>
@@ -523,9 +551,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
   subtitleChip: {
-    backgroundColor: colors.subtitleBg,
     borderWidth: borders.thick,
-    borderColor: colors.subtitleBorder,
     borderRadius: radii.pill,
     paddingHorizontal: 14,
     paddingVertical: 6,
@@ -534,6 +560,5 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bodyHeavy,
     fontSize: 14,
     fontWeight: '800',
-    color: colors.subtitleText,
   },
 });

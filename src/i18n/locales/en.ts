@@ -39,7 +39,7 @@ const en: TranslationTree = {
   win: {
     title: 'Sweet!',
     message: 'You solved the puzzle!',
-    playAgain: 'Play Again',
+    playNext: 'Play Next',
     backHome: 'Back to Home',
     keepLooking: 'Keep Looking',
   },

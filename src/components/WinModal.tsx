@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Animated, Modal, StyleSheet, Text, View } from 'react-native';
 import { useI18n } from '../i18n/I18nProvider';
 import { useLayoutMetrics } from '../hooks/useLayoutMetrics';
@@ -12,6 +12,134 @@ type Props = {
   onHome: () => void;
   onClose: () => void;
 };
+
+const CONFETTI_COLORS = [
+  colors.starLavender,
+  colors.starYellow,
+  colors.starMint,
+  colors.gummy[0].bg,
+  colors.gummy[2].bg,
+  colors.gummy[4].bg,
+  colors.gummy[5].bg,
+  colors.gummy[6].bg,
+  colors.gummy[7].bg,
+];
+
+type Piece = {
+  key: string;
+  left: number;
+  size: number;
+  color: string;
+  delay: number;
+  drift: number;
+  spin: number;
+  round: boolean;
+  duration: number;
+};
+
+function buildPieces(seed: number): Piece[] {
+  // Deterministic-enough scatter from a seed so pieces don't reshuffle mid-flight.
+  let n = seed || 1;
+  const next = () => {
+    n = (n * 16807) % 2147483647;
+    return n / 2147483647;
+  };
+
+  return Array.from({ length: 28 }, (_, index) => {
+    const roll = next();
+    return {
+      key: `confetti-${index}`,
+      left: next() * 100,
+      size: 6 + Math.round(next() * 8),
+      color: CONFETTI_COLORS[Math.floor(next() * CONFETTI_COLORS.length)],
+      delay: Math.round(next() * 220),
+      drift: (next() - 0.5) * 70,
+      spin: (next() > 0.5 ? 1 : -1) * (140 + next() * 220),
+      round: roll > 0.45,
+      duration: 1400 + Math.round(next() * 900),
+    };
+  });
+}
+
+function ConfettiBurst({ active }: { active: boolean }) {
+  const { height } = useLayoutMetrics();
+  const pieces = useMemo(() => buildPieces(active ? Date.now() % 100000 : 1), [active]);
+  const progress = useRef(pieces.map(() => new Animated.Value(0))).current;
+
+  useEffect(() => {
+    progress.forEach((value) => value.setValue(0));
+    if (!active) return;
+
+    const animations = pieces.map((piece, index) =>
+      Animated.timing(progress[index], {
+        toValue: 1,
+        duration: piece.duration,
+        delay: piece.delay,
+        useNativeDriver: true,
+      }),
+    );
+    const batch = Animated.parallel(animations);
+    batch.start();
+    return () => batch.stop();
+  }, [active, pieces, progress]);
+
+  if (!active) return null;
+
+  const fallDistance = Math.max(520, height * 0.85);
+
+  return (
+    <View pointerEvents="none" style={styles.confettiLayer}>
+      {pieces.map((piece, index) => {
+        const value = progress[index];
+        return (
+          <Animated.View
+            key={piece.key}
+            style={[
+              styles.confettiPiece,
+              {
+                left: `${piece.left}%`,
+                width: piece.size,
+                height: piece.round ? piece.size : piece.size * 1.55,
+                borderRadius: piece.round ? piece.size : 3,
+                backgroundColor: piece.color,
+                opacity: value.interpolate({
+                  inputRange: [0, 0.12, 0.75, 1],
+                  outputRange: [0, 1, 1, 0],
+                }),
+                transform: [
+                  {
+                    translateY: value.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [-40, fallDistance],
+                    }),
+                  },
+                  {
+                    translateX: value.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, piece.drift],
+                    }),
+                  },
+                  {
+                    rotate: value.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: ['0deg', `${piece.spin}deg`],
+                    }),
+                  },
+                  {
+                    scale: value.interpolate({
+                      inputRange: [0, 0.15, 1],
+                      outputRange: [0.4, 1.1, 0.85],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          />
+        );
+      })}
+    </View>
+  );
+}
 
 export function WinModal({
   visible,
@@ -40,13 +168,13 @@ export function WinModal({
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.overlay}>
+        <ConfettiBurst active={visible} />
         <Animated.View style={[styles.card, { maxWidth: modalMaxWidth, transform: [{ scale: pop }] }]}>
-          <Text style={styles.stars}>★★★</Text>
           <Text style={styles.title}>{t('win.title')}</Text>
           <Text style={styles.message}>{t('win.message')}</Text>
           {unlockMessage ? <Text style={styles.unlock}>{unlockMessage}</Text> : null}
           <PressableScale onPress={onPlayAgain} style={styles.button}>
-            <Text style={styles.buttonText}>{t('win.playAgain')}</Text>
+            <Text style={styles.buttonText}>{t('win.playNext')}</Text>
           </PressableScale>
           <PressableScale onPress={onHome} style={styles.secondary}>
             <Text style={styles.secondaryText}>{t('win.backHome')}</Text>
@@ -68,6 +196,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: spacing.xl,
   },
+  confettiLayer: {
+    ...StyleSheet.absoluteFill,
+    overflow: 'hidden',
+  },
+  confettiPiece: {
+    position: 'absolute',
+    top: 0,
+  },
   card: {
     width: '100%',
     backgroundColor: colors.modalBg,
@@ -79,12 +215,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     ...shadows.soft,
-  },
-  stars: {
-    fontSize: 34,
-    color: colors.star,
-    letterSpacing: 8,
-    marginBottom: 2,
   },
   title: {
     fontFamily: fonts.display,

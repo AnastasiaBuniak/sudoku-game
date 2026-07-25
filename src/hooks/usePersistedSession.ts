@@ -101,10 +101,13 @@ export function usePersistedSession() {
     [persist],
   );
 
+  const getSession = useCallback(() => sessionRef.current, []);
+
   return {
     session,
     ready,
     canContinue: hasUnfinishedGame(session.game),
+    getSession,
     setScreen,
     setMode,
     setSelectedLevel,

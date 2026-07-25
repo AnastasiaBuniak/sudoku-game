@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
+    "playwright": "^1.49.1",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -36,7 +37,8 @@
     "web": "expo start --web",
     "build:preview:android": "eas build --profile preview --platform android",
     "build:preview:ios": "eas build --profile preview --platform ios",
-    "build:production": "eas build --profile production --platform all"
+    "build:production": "eas build --profile production --platform all",
+    "store:screenshots": "node store/scripts/capture-screenshots.mjs"
   },
   "private": true
 }

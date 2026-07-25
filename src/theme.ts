@@ -8,8 +8,8 @@ export const brand = {
  * misty candy sky, glossy lavender board, cream pillow tiles, rainbow gummy digits.
  */
 export const colors = {
-  bgTop: '#E8D4F8',
-  bgMid: '#F8D0E8',
+  bgTop: '#E0D0F8',
+  bgMid: '#E8D8F8',
   bgBottom: '#D8ECFF',
 
   blobPink: 'rgba(255, 170, 210, 0.45)',
@@ -24,10 +24,10 @@ export const colors = {
   starLavender: '#D2B8FF',
   sparkle: 'rgba(255, 255, 255, 0.85)',
 
-  title: '#E85AA8',
-  titleShadow: 'rgba(180, 80, 140, 0.28)',
-  ink: '#6B3A8C',
-  inkSoft: '#8A6AA8',
+  title: '#8B5CF6',
+  titleShadow: 'rgba(100, 70, 180, 0.28)',
+  ink: '#5B3A8C',
+  inkSoft: '#7A6AA8',
   /** Soft clear blue board digits — readable, easy on eyes */
   digit: '#2F8FD6',
   digitCorrectFlash: '#34C759',
@@ -50,23 +50,27 @@ export const colors = {
   tileShadow: 'rgba(160, 120, 190, 0.2)',
   tileSelected: '#D8ECFF',
   tileRelated: '#F7F2FF',
-  tileSame: '#FFF0F6',
-  tileConflict: '#FFE4DC',
+  /** Matching digits — soft sky, in family with tileSelected / digit blue. */
+  tileSame: '#BFE6FF',
+  /** Wrong answers — soft rose fill (paired with conflictText). */
+  tileConflict: '#FFC8BE',
 
   /** Wrong answers on the board */
   conflictText: '#E11D48',
+  /** Matching digits — richer blue than the default digit, still clearly “same”. */
+  digitSame: '#1A6FBF',
 
-  // Per-digit gummy candy colors (board + pad)
+  // Per-digit gummy candy colors (board + pad) — violet-leaning, less hot pink
   gummy: [
-    { bg: '#FF8EC4', border: '#F25A9C', text: '#FF5AA8', gloss: '#FFC8E4' }, // 1 pink
+    { bg: '#C4A0FF', border: '#9B6AE8', text: '#A78BFA', gloss: '#E4D4FF' }, // 1 lilac
     { bg: '#FFB86A', border: '#F08A30', text: '#FF9A3A', gloss: '#FFD8A8' }, // 2 orange
     { bg: '#FFE066', border: '#E0B820', text: '#F0C020', gloss: '#FFF0A8' }, // 3 yellow
     { bg: '#9AE85A', border: '#6EC830', text: '#6ED83A', gloss: '#D0F8A8' }, // 4 lime
     { bg: '#5ADCC0', border: '#28B898', text: '#2AC8A8', gloss: '#A8F0E0' }, // 5 mint
     { bg: '#6AC8F0', border: '#30A0D8', text: '#30B0E8', gloss: '#B0E8FF' }, // 6 sky
     { bg: '#7A9AFF', border: '#4A6EF0', text: '#5A7AFF', gloss: '#C0D0FF' }, // 7 blue
-    { bg: '#C08AFF', border: '#9860E0', text: '#A86AFF', gloss: '#E0C8FF' }, // 8 grape
-    { bg: '#FF7AD0', border: '#E048B0', text: '#FF5AC0', gloss: '#FFC0E8' }, // 9 bubble
+    { bg: '#B08AFF', border: '#8A5AE0', text: '#9B6AFF', gloss: '#DCC8FF' }, // 8 grape
+    { bg: '#9A7AFF', border: '#6E4AD8', text: '#7C5CE0', gloss: '#D0C0FF' }, // 9 violet
   ] as const,
 
   eraseBg: '#FFF8F0',
@@ -79,9 +83,9 @@ export const colors = {
   mediumBg: '#FFF3B0',
   mediumBorder: '#E0C040',
   mediumText: '#7A5C00',
-  hardBg: '#FFD0E4',
-  hardBorder: '#F0629A',
-  hardText: '#9D174D',
+  hardBg: '#E0D4FF',
+  hardBorder: '#A78BFA',
+  hardText: '#5B21B6',
   profiBg: '#D0EEFF',
   profiBorder: '#5BB8E0',
   profiText: '#0C4A6E',
@@ -95,14 +99,14 @@ export const colors = {
   hintBorder: '#F0C98A',
   hintText: '#9A5B1A',
 
-  chanceFull: '#FF8EC4',
+  chanceFull: '#A78BFA',
   chanceEmpty: '#F0E8F4',
-  chanceBorder: '#F25A9C',
+  chanceBorder: '#7C5CE0',
   chanceEmptyBorder: '#E4DCE8',
-  chanceLabel: '#C04080',
+  chanceLabel: '#6D28D9',
 
-  ctaBg: '#FF7AB8',
-  ctaBorder: '#E85098',
+  ctaBg: '#A78BFA',
+  ctaBorder: '#7C5CE0',
   ctaText: '#FFFFFF',
   ctaGloss: 'rgba(255,255,255,0.35)',
 
@@ -112,6 +116,26 @@ export const colors = {
   star: '#FFE066',
   overlay: 'rgba(90, 50, 120, 0.35)',
 };
+
+/** Shared home-pill / in-game level-chip colors (by ladder index). */
+export type LevelPalette = {
+  bg: string;
+  border: string;
+  text: string;
+};
+
+export const LEVEL_PALETTES: LevelPalette[] = [
+  { bg: colors.easyBg, border: colors.easyBorder, text: colors.easyText },
+  { bg: colors.mediumBg, border: colors.mediumBorder, text: colors.mediumText },
+  { bg: colors.hardBg, border: colors.hardBorder, text: colors.hardText },
+  { bg: colors.profiBg, border: colors.profiBorder, text: colors.profiText },
+  { bg: colors.masterBg, border: colors.masterBorder, text: colors.masterText },
+];
+
+export function getLevelPalette(index: number): LevelPalette {
+  const safeIndex = index >= 0 ? index : 0;
+  return LEVEL_PALETTES[safeIndex % LEVEL_PALETTES.length];
+}
 
 export const fonts = {
   display: 'Fredoka_700Bold',

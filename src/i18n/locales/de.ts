@@ -32,7 +32,7 @@ const de: TranslationTree = {
   win: {
     title: 'Süß!',
     message: 'Du hast das Rätsel gelöst!',
-    playAgain: 'Nochmal spielen',
+    playNext: 'Weiter spielen',
     backHome: 'Zur Startseite',
     keepLooking: 'Weiter schauen',
   },

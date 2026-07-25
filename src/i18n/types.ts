@@ -42,7 +42,7 @@ export type TranslationTree = {
   win: {
     title: string;
     message: string;
-    playAgain: string;
+    playNext: string;
     backHome: string;
     keepLooking: string;
   };

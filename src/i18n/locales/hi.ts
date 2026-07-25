@@ -32,7 +32,7 @@ const hi: TranslationTree = {
   win: {
     title: 'वाह!',
     message: 'आपने पहेली हल कर ली!',
-    playAgain: 'फिर से खेलें',
+    playNext: 'अगला खेलें',
     backHome: 'होम पर जाएँ',
     keepLooking: 'देखते रहें',
   },

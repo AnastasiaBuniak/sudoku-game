@@ -4,10 +4,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const BASE_WIDTH = 390;
 const BASE_HEIGHT = 844;
-/** Board / number tableau as a fraction of screen width (target mid 80–85%). */
-const BOARD_WIDTH_RATIO = 0.83;
-const BOARD_WIDTH_MIN_RATIO = 0.8;
-const BOARD_WIDTH_MAX_RATIO = 0.85;
+/** Board / number tableau as a fraction of screen width (target mid 80–88%). */
+const BOARD_WIDTH_RATIO = 0.86;
+const BOARD_WIDTH_MIN_RATIO = 0.82;
+const BOARD_WIDTH_MAX_RATIO = 0.88;
 
 export type LayoutMetrics = {
   width: number;

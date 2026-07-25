@@ -32,7 +32,7 @@ const zh: TranslationTree = {
   win: {
     title: '太甜了！',
     message: '你解出了这道谜题！',
-    playAgain: '再玩一次',
+    playNext: '下一关',
     backHome: '返回主页',
     keepLooking: '继续看看',
   },

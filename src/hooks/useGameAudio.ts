@@ -3,12 +3,16 @@ import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
 
 const bgMusic = require('../../assets/sounds/bg-music.wav');
 const correctSound = require('../../assets/sounds/correct.wav');
+const wrongSound = require('../../assets/sounds/wrong.wav');
+const eraseSound = require('../../assets/sounds/erase.wav');
 
 export function useGameAudio() {
   const [muted, setMuted] = useState(false);
   const musicStarted = useRef(false);
   const musicPlayer = useAudioPlayer(bgMusic);
   const correctPlayer = useAudioPlayer(correctSound);
+  const wrongPlayer = useAudioPlayer(wrongSound);
+  const erasePlayer = useAudioPlayer(eraseSound);
 
   useEffect(() => {
     setAudioModeAsync({
@@ -20,6 +24,8 @@ export function useGameAudio() {
     musicPlayer.loop = true;
     musicPlayer.volume = 0.28;
     correctPlayer.volume = 0.75;
+    wrongPlayer.volume = 0.7;
+    erasePlayer.volume = 0.55;
 
     try {
       musicPlayer.play();
@@ -38,7 +44,9 @@ export function useGameAudio() {
   useEffect(() => {
     musicPlayer.muted = muted;
     correctPlayer.muted = muted;
-  }, [muted, musicPlayer, correctPlayer]);
+    wrongPlayer.muted = muted;
+    erasePlayer.muted = muted;
+  }, [muted, musicPlayer, correctPlayer, wrongPlayer, erasePlayer]);
 
   const ensureMusicPlaying = useCallback(() => {
     if (muted || musicPlayer.playing) return;
@@ -50,16 +58,23 @@ export function useGameAudio() {
     }
   }, [muted, musicPlayer]);
 
-  const playCorrect = useCallback(async () => {
-    ensureMusicPlaying();
-    if (muted) return;
-    try {
-      await correctPlayer.seekTo(0);
-      correctPlayer.play();
-    } catch {
-      // Ignore playback errors
-    }
-  }, [muted, correctPlayer, ensureMusicPlaying]);
+  const playSfx = useCallback(
+    async (player: typeof correctPlayer) => {
+      ensureMusicPlaying();
+      if (muted) return;
+      try {
+        await player.seekTo(0);
+        player.play();
+      } catch {
+        // Ignore playback errors
+      }
+    },
+    [muted, ensureMusicPlaying],
+  );
+
+  const playCorrect = useCallback(() => playSfx(correctPlayer), [playSfx, correctPlayer]);
+  const playWrong = useCallback(() => playSfx(wrongPlayer), [playSfx, wrongPlayer]);
+  const playErase = useCallback(() => playSfx(erasePlayer), [playSfx, erasePlayer]);
 
   const toggleMute = useCallback(() => {
     setMuted((current) => {
@@ -77,5 +92,5 @@ export function useGameAudio() {
     });
   }, [musicPlayer]);
 
-  return { muted, toggleMute, playCorrect, ensureMusicPlaying };
+  return { muted, toggleMute, playCorrect, playWrong, playErase, ensureMusicPlaying };
 }

@@ -30,6 +30,7 @@ type SymbolProps = {
   symbol: SymbolKind;
   isGiven: boolean;
   isIncorrect: boolean;
+  isSameNumber: boolean;
   cellSize: number;
   celebrate: boolean;
 };
@@ -121,17 +122,24 @@ function BoardDigit({
   value,
   isGiven,
   isIncorrect,
+  isSameNumber,
   fontSize,
   celebrate,
 }: {
   value: number;
   isGiven: boolean;
   isIncorrect: boolean;
+  isSameNumber: boolean;
   fontSize: number;
   celebrate: boolean;
 }) {
   const flash = useRef(new Animated.Value(0)).current;
   const previous = useRef(value);
+  const digitTone = isIncorrect
+    ? styles.digitWrong
+    : isSameNumber
+      ? styles.digitSame
+      : styles.digitNormal;
 
   useEffect(() => {
     const wasEmptyOrDifferent = previous.current !== value;
@@ -168,17 +176,13 @@ function BoardDigit({
 
   if (value === 0) return null;
 
-  if (isIncorrect) {
-    return <Text style={[styles.digit, styles.digitWrong, { fontSize }]}>{value}</Text>;
-  }
-
-  if (isGiven) {
-    return <Text style={[styles.digit, styles.digitNormal, { fontSize }]}>{value}</Text>;
+  if (isIncorrect || isGiven) {
+    return <Text style={[styles.digit, digitTone, { fontSize }]}>{value}</Text>;
   }
 
   return (
     <View style={styles.digitStack}>
-      <Text style={[styles.digit, styles.digitNormal, { fontSize }]}>{value}</Text>
+      <Text style={[styles.digit, digitTone, { fontSize }]}>{value}</Text>
       <Animated.Text
         style={[
           styles.digit,
@@ -193,20 +197,29 @@ function BoardDigit({
   );
 }
 
-function BoardSymbol({ value, symbol, isGiven, isIncorrect, cellSize, celebrate }: SymbolProps) {
+function BoardSymbol({
+  value,
+  symbol,
+  isGiven,
+  isIncorrect,
+  isSameNumber,
+  cellSize,
+  celebrate,
+}: SymbolProps) {
   if (value === 0) return null;
 
   if (symbol === 'animal') {
-    const glyphSize = Math.round(cellSize * 0.74);
+    const glyphSize = Math.round(cellSize * 0.78);
     return <AnimalGlyph value={value} size={glyphSize} dimmed={isIncorrect} />;
   }
 
-  const fontSize = Math.max(14, Math.round(cellSize * 0.56));
+  const fontSize = Math.max(16, Math.round(cellSize * 0.62));
   return (
     <BoardDigit
       value={value}
       isGiven={isGiven}
       isIncorrect={isIncorrect}
+      isSameNumber={isSameNumber}
       fontSize={fontSize}
       celebrate={celebrate}
     />
@@ -286,9 +299,13 @@ function PillowTile({
             width: size,
             height: size,
             borderRadius: radius,
-            borderColor: selected ? colors.digit : 'transparent',
-            borderWidth: selected ? 2 : 0,
-            backgroundColor: colors.tile,
+            borderColor: incorrect
+              ? 'rgba(225, 29, 72, 0.45)'
+              : selected
+                ? colors.digit
+                : 'transparent',
+            borderWidth: incorrect || selected ? 2 : 0,
+            backgroundColor: base,
           },
           boxCelebrate && styles.tileBoxGlow,
         ]}
@@ -301,6 +318,7 @@ function PillowTile({
           style={[styles.tileInner, { borderRadius: Math.max(6, radius - 2) }]}
         >
           <View style={styles.tileShine} />
+          {incorrect ? <View pointerEvents="none" style={styles.tileConflictWash} /> : null}
           {children}
           <CellSparkles active={celebrate} strong={boxCelebrate} />
         </LinearGradient>
@@ -322,9 +340,10 @@ export function SudokuBoard({
 }: Props) {
   const { t } = useI18n();
   const { size, boxRows, boxCols } = grid;
-  const framePad = Math.max(10, Math.round(boardSize * 0.035));
+  // Chunky lavender frame so pillow tiles sit inset (not flush with the edge).
+  const framePad = Math.max(14, Math.round(boardSize * 0.048));
   const cellGap = Math.max(3, Math.round(boardSize * 0.012));
-  const blockGap = Math.max(7, Math.round(boardSize * 0.028));
+  const blockGap = Math.max(8, Math.round(boardSize * 0.03));
   const inner = boardSize - framePad * 2;
 
   // Cells are square. Horizontal gaps set the cell size; vertical gaps then
@@ -385,8 +404,6 @@ export function SudokuBoard({
         end={{ x: 0.9, y: 1 }}
         style={[styles.frame, { borderRadius: frameRadius, padding: framePad }]}
       >
-        <View style={styles.frameGloss} />
-
         <View style={styles.grid}>
           {board.map((row, rowIndex) => (
             <View
@@ -438,6 +455,7 @@ export function SudokuBoard({
                         symbol={symbol}
                         isGiven={isGivenCell}
                         isIncorrect={isIncorrect}
+                        isSameNumber={isSameNumber}
                         cellSize={cellSize}
                         celebrate={celebrate}
                       />
@@ -469,15 +487,6 @@ const styles = StyleSheet.create({
     flex: 1,
     overflow: 'hidden',
   },
-  frameGloss: {
-    position: 'absolute',
-    top: 8,
-    left: 18,
-    right: 48,
-    height: 14,
-    borderRadius: 999,
-    backgroundColor: 'rgba(255,255,255,0.22)',
-  },
   grid: {
     flex: 1,
     justifyContent: 'center',
@@ -507,6 +516,10 @@ const styles = StyleSheet.create({
     height: 5,
     borderRadius: 999,
     backgroundColor: 'rgba(255, 255, 255, 0.28)',
+  },
+  tileConflictWash: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: 'rgba(225, 29, 72, 0.12)',
   },
   sparkleLayer: {
     ...StyleSheet.absoluteFill,
@@ -547,6 +560,9 @@ const styles = StyleSheet.create({
   },
   digitNormal: {
     color: colors.digit,
+  },
+  digitSame: {
+    color: colors.digitSame,
   },
   digitFlash: {
     color: colors.digitCorrectFlash,

@@ -59,12 +59,6 @@ export function SoftBackground() {
         style={StyleSheet.absoluteFill}
       />
 
-      <View style={[styles.cloud, styles.cloud1]} />
-      <View style={[styles.cloud, styles.cloud2]} />
-      <View style={[styles.cloud, styles.cloud3]} />
-      <View style={[styles.cloud, styles.cloud4]} />
-      <View style={[styles.cloud, styles.cloud5]} />
-
       {STARS.map((star, index) => (
         <CandyStar
           key={`star-${index}`}
@@ -106,46 +100,6 @@ const styles = StyleSheet.create({
   root: {
     ...StyleSheet.absoluteFill,
     overflow: 'hidden',
-  },
-  cloud: {
-    position: 'absolute',
-    borderRadius: 999,
-  },
-  cloud1: {
-    width: 220,
-    height: 110,
-    backgroundColor: colors.blobPink,
-    top: -30,
-    left: -50,
-  },
-  cloud2: {
-    width: 180,
-    height: 100,
-    backgroundColor: colors.blobLavender,
-    top: 60,
-    right: -40,
-  },
-  cloud3: {
-    width: 200,
-    height: 120,
-    backgroundColor: colors.blobBlue,
-    bottom: 140,
-    left: -60,
-  },
-  cloud4: {
-    width: 160,
-    height: 90,
-    backgroundColor: colors.blobMint,
-    bottom: 40,
-    right: -30,
-  },
-  cloud5: {
-    width: 140,
-    height: 80,
-    backgroundColor: colors.blobYellow,
-    top: 220,
-    left: -20,
-    opacity: 0.7,
   },
   starWrap: {
     position: 'absolute',

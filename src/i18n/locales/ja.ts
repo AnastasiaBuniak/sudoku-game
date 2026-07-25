@@ -32,7 +32,7 @@ const ja: TranslationTree = {
   win: {
     title: 'やったね！',
     message: 'パズルをクリアしたよ！',
-    playAgain: 'もういちど',
+    playNext: 'つぎへ',
     backHome: 'ホームへ',
     keepLooking: 'みつづける',
   },
