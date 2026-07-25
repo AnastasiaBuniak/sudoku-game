@@ -14,12 +14,20 @@ const de: TranslationTree = {
     chooseLevel: 'Level wählen',
     unlockPrompt: 'Gewinne noch %{count} %{level}-Rätsel, um %{next} freizuschalten!',
   },
+  modes: {
+    numbers: 'Zahlen',
+    animals: 'Tiere',
+  },
   levels: {
     easy: 'Leicht',
     medium: 'Mittel',
     hard: 'Schwer',
     profi: 'Profi',
     master: 'Meister',
+    cubs: 'Kleine',
+    meadow: 'Wiese',
+    forest: 'Wald',
+    jungle: 'Dschungel',
   },
   game: {
     chances: 'Leben',
@@ -42,11 +50,21 @@ const de: TranslationTree = {
     tryAgain: 'Nochmal versuchen',
     backHome: 'Zur Startseite',
   },
+  howToPlay: {
+    title: 'So geht’s',
+    step1: 'Tippe auf ein leeres Feld',
+    step2Numbers: 'Tippe unten auf eine Zahl',
+    step2Animals: 'Tippe unten auf ein Tier',
+    step3: 'Fülle jede Reihe, Spalte und jeden Block — ohne Wiederholung',
+    chances: 'Herzen sind deine Leben. Ein Fehler kostet eines.',
+    gotIt: 'Alles klar!',
+  },
   a11y: {
     backHome: 'Zur Startseite zurück',
     mute: 'Ton aus',
     unmute: 'Ton an',
     language: 'Sprache',
+    howToPlay: 'So geht’s',
   },
 };
 

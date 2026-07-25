@@ -14,12 +14,20 @@ const ar: TranslationTree = {
     chooseLevel: 'اختر مستوى',
     unlockPrompt: 'اربح %{count} ألغاز إضافية من مستوى %{level} لفتح %{next}!',
   },
+  modes: {
+    numbers: 'أرقام',
+    animals: 'حيوانات',
+  },
   levels: {
     easy: 'سهل',
     medium: 'متوسط',
     hard: 'صعب',
     profi: 'محترف',
     master: 'خبير',
+    cubs: 'الصغار',
+    meadow: 'مرج',
+    forest: 'غابة',
+    jungle: 'أدغال',
   },
   game: {
     chances: 'فرص',
@@ -42,11 +50,21 @@ const ar: TranslationTree = {
     tryAgain: 'حاول مجدداً',
     backHome: 'العودة للرئيسية',
   },
+  howToPlay: {
+    title: 'طريقة اللعب',
+    step1: 'اضغط على خانة فارغة',
+    step2Numbers: 'اضغط على رقم بالأسفل',
+    step2Animals: 'اضغط على حيوان بالأسفل',
+    step3: 'املأ كل صف وعمود ومربع — بلا تكرار',
+    chances: 'القلوب هي فرصك. الإجابة الخاطئة تستهلك واحدةً.',
+    gotIt: 'فهمت!',
+  },
   a11y: {
     backHome: 'العودة إلى الرئيسية',
     mute: 'كتم الصوت',
     unmute: 'تشغيل الصوت',
     language: 'اللغة',
+    howToPlay: 'طريقة اللعب',
   },
 };
 

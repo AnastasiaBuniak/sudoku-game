@@ -17,7 +17,9 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { BackButton } from './src/components/BackButton';
 import { GameControls } from './src/components/GameControls';
 import { GameOverModal } from './src/components/GameOverModal';
+import { HelpButton } from './src/components/HelpButton';
 import { HomeScreen } from './src/components/HomeScreen';
+import { HowToPlayModal } from './src/components/HowToPlayModal';
 import { LanguageSelector } from './src/components/LanguageSelector';
 import { MistakesCounter } from './src/components/MistakesCounter';
 import { MuteButton } from './src/components/MuteButton';
@@ -27,6 +29,7 @@ import { SoftBackground } from './src/components/SoftBackground';
 import { SudokuBoard } from './src/components/SudokuBoard';
 import { WinModal } from './src/components/WinModal';
 import { useGameAudio } from './src/hooks/useGameAudio';
+import { useHowToPlay } from './src/hooks/useHowToPlay';
 import { useLayoutMetrics } from './src/hooks/useLayoutMetrics';
 import { useLevelProgress } from './src/hooks/useLevelProgress';
 import { usePersistedSession } from './src/hooks/usePersistedSession';
@@ -112,8 +115,15 @@ function AppContent() {
     updateGame,
     clearGame,
   } = usePersistedSession();
+  const {
+    ready: howToReady,
+    seen: howToSeen,
+    visible: howToVisible,
+    open: openHowToPlay,
+    dismiss: dismissHowToPlay,
+  } = useHowToPlay();
 
-  const ready = fontsReady && progressReady && sessionReady && localeReady;
+  const ready = fontsReady && progressReady && sessionReady && localeReady && howToReady;
   const { screen, mode, selectedLevels, game } = session;
   const selectedLevel = selectedLevels[mode];
   const progress = getProgress(mode);
@@ -339,6 +349,16 @@ function AppContent() {
     ? getLevelPalette(getLevelIndex(game.mode, game.levelId))
     : getLevelPalette(0);
 
+  // First visit to a puzzle: show the tip once, unless win/lose already owns the screen.
+  useEffect(() => {
+    if (!ready || howToSeen || !onGameScreen || !game) return;
+    if (game.won || game.lost) return;
+    openHowToPlay();
+  }, [ready, howToSeen, onGameScreen, game?.won, game?.lost, game?.levelId, openHowToPlay]);
+
+  const showHowToPlay =
+    howToVisible && onGameScreen && Boolean(game) && !game?.won && !game?.lost;
+
   if (!ready) {
     return (
       <View style={styles.root}>
@@ -365,6 +385,14 @@ function AppContent() {
       ) : (
         <LanguageSelector />
       )}
+      {onGameScreen ? (
+        <HelpButton
+          onPress={() => {
+            ensureMusicPlaying();
+            openHowToPlay();
+          }}
+        />
+      ) : null}
       <MuteButton muted={muted} onToggle={toggleMute} />
       <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
         <ScrollView
@@ -473,6 +501,12 @@ function AppContent() {
           )}
         </ScrollView>
       </SafeAreaView>
+
+      <HowToPlayModal
+        visible={showHowToPlay}
+        mode={game?.mode ?? mode}
+        onDismiss={dismissHowToPlay}
+      />
 
       <WinModal
         visible={Boolean(game?.won && screen === 'game' && !winDismissed)}

@@ -14,12 +14,20 @@ const zh: TranslationTree = {
     chooseLevel: '选择难度',
     unlockPrompt: '再赢 %{count} 局%{level}即可解锁%{next}！',
   },
+  modes: {
+    numbers: '数字',
+    animals: '动物',
+  },
   levels: {
     easy: '简单',
     medium: '中等',
     hard: '困难',
     profi: '高手',
     master: '大师',
+    cubs: '幼崽',
+    meadow: '草地',
+    forest: '森林',
+    jungle: '丛林',
   },
   game: {
     chances: '机会',
@@ -42,11 +50,21 @@ const zh: TranslationTree = {
     tryAgain: '再试一次',
     backHome: '返回主页',
   },
+  howToPlay: {
+    title: '怎么玩',
+    step1: '点一个空格',
+    step2Numbers: '点下方的数字',
+    step2Animals: '点下方的小动物',
+    step3: '填满每一行、每一列和每个宫格——不要重复',
+    chances: '爱心是机会。答错会用掉一颗。',
+    gotIt: '知道了！',
+  },
   a11y: {
     backHome: '返回主页',
     mute: '静音',
     unmute: '取消静音',
     language: '语言',
+    howToPlay: '怎么玩',
   },
 };
 

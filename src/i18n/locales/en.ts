@@ -21,7 +21,7 @@ const en: TranslationTree = {
     easy: 'Easy',
     medium: 'Medium',
     hard: 'Hard',
-    profi: 'Profi',
+    profi: 'Expert',
     master: 'Master',
     cubs: 'Cubs',
     meadow: 'Meadow',
@@ -49,11 +49,21 @@ const en: TranslationTree = {
     tryAgain: 'Try Again',
     backHome: 'Back to Home',
   },
+  howToPlay: {
+    title: 'How to play',
+    step1: 'Tap an empty cell',
+    step2Numbers: 'Tap a number below',
+    step2Animals: 'Tap an animal below',
+    step3: 'Fill every row, column, and box — no repeats',
+    chances: 'Hearts are your chances. A wrong answer uses one up.',
+    gotIt: 'Got it!',
+  },
   a11y: {
     backHome: 'Go back to home',
     mute: 'Mute sounds',
     unmute: 'Unmute sounds',
     language: 'Language',
+    howToPlay: 'How to play',
   },
 };
 

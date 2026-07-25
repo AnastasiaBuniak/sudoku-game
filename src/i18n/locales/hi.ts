@@ -14,12 +14,20 @@ const hi: TranslationTree = {
     chooseLevel: 'स्तर चुनें',
     unlockPrompt: '%{next} खोलने के लिए %{count} और %{level} पहेलियाँ जीतें!',
   },
+  modes: {
+    numbers: 'संख्याएँ',
+    animals: 'जानवर',
+  },
   levels: {
     easy: 'आसान',
     medium: 'मध्यम',
     hard: 'कठिन',
-    profi: 'प्रो',
+    profi: 'विशेषज्ञ',
     master: 'मास्टर',
+    cubs: 'शावक',
+    meadow: 'घासभूमि',
+    forest: 'वन',
+    jungle: 'जंगल',
   },
   game: {
     chances: 'मौके',
@@ -42,11 +50,21 @@ const hi: TranslationTree = {
     tryAgain: 'फिर कोशिश करें',
     backHome: 'होम पर जाएँ',
   },
+  howToPlay: {
+    title: 'कैसे खेलें',
+    step1: 'खाली खाने पर टैप करें',
+    step2Numbers: 'नीचे कोई संख्या चुनें',
+    step2Animals: 'नीचे कोई जानवर चुनें',
+    step3: 'हर पंक्ति, स्तंभ और बॉक्स भरें — दोहराएँ नहीं',
+    chances: 'दिल आपके मौके हैं। गलत जवाब से एक कम होता है।',
+    gotIt: 'समझ गए!',
+  },
   a11y: {
     backHome: 'होम पर वापस जाएँ',
     mute: 'आवाज़ बंद करें',
     unmute: 'आवाज़ चालू करें',
     language: 'भाषा',
+    howToPlay: 'कैसे खेलें',
   },
 };
 

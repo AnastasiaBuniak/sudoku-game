@@ -69,10 +69,10 @@ export function HomeScreen({
     canContinue && continueLevel && continueLevel !== activeLevel,
   );
 
-  const nudgeUnlockBanner = () => {
+  const nudgeUnlockCaption = () => {
     unlockNudge.stopAnimation();
     unlockNudge.setValue(0);
-    // Vertical bob only — scaling widened the banner past the screen and got clipped.
+    // Vertical bob only — keeps attention without widening past the screen.
     Animated.sequence([
       Animated.timing(unlockNudge, {
         toValue: 1,
@@ -94,17 +94,16 @@ export function HomeScreen({
     ? layout.pagePaddingY
     : Math.round(clamp(layout.height * 0.035, 16, layout.isTablet ? 40 : 28));
 
-  // Fixed slots (not minHeights) so mode / Continue / unlock changes never
-  // reflow neighbors — especially important on Android Yoga.
+  // Reserved slots so Continue / unlock / level-count changes don't reflow neighbors.
   const primaryCtaHeight = Math.round(88 * layout.scale);
-  const secondaryCtaHeight = Math.round(52 * layout.scale);
-  const unlockSlotHeight = Math.round(72 * layout.fontScale);
-  // Match real pill height (padding + label + chunky border), not a tight estimate.
-  const levelRowHeight = Math.round((layout.isCompact ? 54 : 58) * layout.scale);
+  const secondaryCtaHeight = Math.round(36 * layout.scale);
+  const unlockSlotHeight = Math.round(44 * layout.fontScale);
+  const levelRowHeight = Math.round((layout.isCompact ? 48 : 52) * layout.scale);
   const levelsGridMinHeight = levelRowHeight * 2 + 10;
   const heroSize = layout.heroSize;
   const titleSize = layout.titleSize;
   const taglineSize = Math.round(16 * layout.fontScale);
+  const controlWidth = { maxWidth: ctaMaxWidth, width: '86%' as const };
 
   return (
     <View
@@ -158,7 +157,8 @@ export function HomeScreen({
         </Text>
       </View>
 
-      <View style={[styles.modeToggle, { maxWidth: ctaMaxWidth, width: '86%' }]}>
+      {/* Recessed segment control — not a raised pill twin of Play. */}
+      <View style={[styles.modeToggle, controlWidth]}>
         {GAME_MODES.map((option) => {
           const active = option === mode;
           return (
@@ -166,7 +166,7 @@ export function HomeScreen({
               key={option}
               onPress={() => onSelectMode(option)}
               style={[styles.modeButton, active && styles.modeButtonActive]}
-              scaleTo={0.96}
+              scaleTo={0.97}
             >
               <Text style={[styles.modeText, active && styles.modeTextActive]}>
                 {t(`modes.${option}`)}
@@ -177,7 +177,7 @@ export function HomeScreen({
       </View>
 
       <View style={styles.actions}>
-        {/* Primary: Continue only if it matches the selected level; else Play that level. */}
+        {/* Sole hero CTA. */}
         <PressableScale
           onPress={continueSelected ? onContinue : () => onPlay(activeLevel)}
           disabled={!continueSelected && !canPlay}
@@ -204,43 +204,30 @@ export function HomeScreen({
           )}
         </PressableScale>
 
-        {/* Secondary slot always reserved so levels don't jump when Continue appears. */}
+        {/* Secondary actions as quiet text links — reserved height avoids jump. */}
         <View style={[styles.secondaryCtaSlot, { height: secondaryCtaHeight }]}>
           {continueSelected ? (
             <PressableScale
               onPress={() => onPlay(activeLevel)}
               disabled={!canPlay}
-              style={[
-                styles.secondaryPlayButton,
-                { maxWidth: ctaMaxWidth, height: secondaryCtaHeight },
-                !canPlay && styles.playDisabled,
-              ]}
+              style={[styles.textLinkHit, !canPlay && styles.playDisabled]}
               scaleTo={0.97}
             >
               <Text
                 style={[
-                  styles.playText,
-                  styles.secondaryPlayText,
-                  { fontSize: Math.round(18 * layout.fontScale) },
+                  styles.textLink,
+                  { fontSize: Math.round(16 * layout.fontScale) },
                 ]}
               >
                 {t('home.newPuzzle')}
               </Text>
             </PressableScale>
           ) : continueOther && continueLevel ? (
-            <PressableScale
-              onPress={onContinue}
-              style={[
-                styles.secondaryPlayButton,
-                { maxWidth: ctaMaxWidth, height: secondaryCtaHeight },
-              ]}
-              scaleTo={0.97}
-            >
+            <PressableScale onPress={onContinue} style={styles.textLinkHit} scaleTo={0.97}>
               <Text
                 style={[
-                  styles.playText,
-                  styles.secondaryPlayText,
-                  { fontSize: Math.round(16 * layout.fontScale) },
+                  styles.textLink,
+                  { fontSize: Math.round(15 * layout.fontScale) },
                 ]}
                 numberOfLines={1}
               >
@@ -257,22 +244,21 @@ export function HomeScreen({
           {nextUnlock ? (
             <Animated.View
               style={[
-                styles.unlockBanner,
+                styles.unlockCaptionWrap,
+                controlWidth,
                 {
-                  maxWidth: Math.min(360, layout.contentMaxWidth),
-                  height: unlockSlotHeight,
                   transform: [
                     {
                       translateY: unlockNudge.interpolate({
                         inputRange: [0, 1],
-                        outputRange: [0, -4],
+                        outputRange: [0, -3],
                       }),
                     },
                   ],
                 },
               ]}
             >
-              <Text style={styles.unlockBannerText} numberOfLines={3}>
+              <Text style={styles.unlockCaption} numberOfLines={2}>
                 {t('home.unlockPrompt', {
                   count: nextUnlock.remaining,
                   level: levelLabel(nextUnlock.requiredLevel.id),
@@ -286,37 +272,55 @@ export function HomeScreen({
           {config.levels.map((level, index) => {
             const unlocked = isLevelUnlocked(config, progress, level.id);
             const active = unlocked && level.id === activeLevel;
-            const palette = unlocked
-              ? getLevelPalette(index)
-              : {
-                  bg: colors.lockedBg,
-                  border: colors.lockedBorder,
-                  text: colors.lockedText,
-                };
+            const palette = getLevelPalette(index);
 
             return (
               <PressableScale
                 key={level.id}
                 onPress={() => {
                   if (!unlocked) {
-                    if (nextUnlock) nudgeUnlockBanner();
+                    if (nextUnlock) nudgeUnlockCaption();
                     return;
                   }
                   setActiveLevel(level.id);
                   onSelectLevel(level.id);
                 }}
                 style={[
-                  styles.levelButton,
+                  styles.levelChip,
                   {
                     minWidth: layout.isTablet ? 120 : layout.isCompact ? 88 : 100,
+                  },
+                  unlocked && !active && {
+                    backgroundColor: 'transparent',
+                    borderColor: palette.border,
+                    borderWidth: borders.thick,
+                  },
+                  unlocked && active && {
                     backgroundColor: palette.bg,
                     borderColor: palette.border,
-                    borderWidth: active ? borders.chunky : borders.thick,
-                    opacity: unlocked ? 1 : 0.48,
+                    borderWidth: borders.chunky,
+                    ...shadows.button,
+                  },
+                  !unlocked && {
+                    backgroundColor: 'transparent',
+                    borderColor: colors.lockedBorder,
+                    borderWidth: borders.thick,
+                    opacity: 0.42,
                   },
                 ]}
               >
-                <Text style={[styles.levelText, { color: palette.text }]}>
+                <Text
+                  style={[
+                    styles.levelText,
+                    {
+                      color: unlocked
+                        ? active
+                          ? palette.text
+                          : palette.border
+                        : colors.lockedText,
+                    },
+                  ]}
+                >
                   {levelLabel(level.id)}
                 </Text>
               </PressableScale>
@@ -372,18 +376,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing.sm,
-    backgroundColor: colors.tile,
+    gap: 4,
+    backgroundColor: 'rgba(140, 110, 190, 0.18)',
     borderRadius: radii.pill,
-    borderWidth: borders.thick,
-    borderColor: colors.eraseBorder,
     padding: 4,
-    ...shadows.button,
   },
   modeButton: {
     flex: 1,
     alignItems: 'center',
-    paddingHorizontal: 22,
+    paddingHorizontal: 18,
     paddingVertical: 10,
     borderRadius: radii.pill,
   },
@@ -402,7 +403,7 @@ const styles = StyleSheet.create({
   actions: {
     width: '100%',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.sm,
   },
   playButton: {
     width: '86%',
@@ -421,17 +422,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  secondaryPlayButton: {
-    width: '86%',
-    maxWidth: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.tile,
-    borderWidth: borders.thick,
-    borderColor: colors.ctaBorder,
-    borderRadius: radii.pill,
-    paddingVertical: 0,
-    ...shadows.button,
+  textLinkHit: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  textLink: {
+    fontFamily: fonts.bodyHeavy,
+    fontWeight: '800',
+    color: colors.ctaBorder,
+    textAlign: 'center',
+    textDecorationLine: 'underline',
   },
   playDisabled: {
     opacity: 0.4,
@@ -442,9 +442,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 0.5,
     textAlign: 'center',
-  },
-  secondaryPlayText: {
-    color: colors.ctaBorder,
   },
   playSubtext: {
     marginTop: 4,
@@ -470,25 +467,19 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'visible',
   },
-  unlockBanner: {
-    width: '100%',
+  unlockCaptionWrap: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.hintBg,
-    borderWidth: borders.thick,
-    borderColor: colors.hintBorder,
-    borderRadius: radii.lg,
-    paddingHorizontal: spacing.lg,
-    overflow: 'hidden',
   },
-  unlockBannerText: {
-    fontFamily: fonts.bodyHeavy,
-    fontSize: 14,
-    fontWeight: '800',
-    color: colors.hintText,
+  unlockCaption: {
+    fontFamily: fonts.bodySoft,
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.inkSoft,
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 18,
   },
   levelsGrid: {
     width: '100%',
@@ -498,12 +489,11 @@ const styles = StyleSheet.create({
     alignContent: 'flex-start',
     gap: 10,
   },
-  levelButton: {
+  levelChip: {
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 11,
     borderRadius: radii.pill,
-    ...shadows.button,
   },
   levelText: {
     fontFamily: fonts.bodyHeavy,

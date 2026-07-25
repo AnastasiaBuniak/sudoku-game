@@ -14,12 +14,20 @@ const ja: TranslationTree = {
     chooseLevel: 'レベルを選ぶ',
     unlockPrompt: '%{level}をあと%{count}回クリアすると%{next}が解放！',
   },
+  modes: {
+    numbers: 'すうじ',
+    animals: 'どうぶつ',
+  },
   levels: {
     easy: 'かんたん',
     medium: 'ふつう',
     hard: 'むずかしい',
-    profi: 'プロ',
+    profi: 'エキスパート',
     master: 'マスター',
+    cubs: 'ちびっこ',
+    meadow: '草原',
+    forest: 'もり',
+    jungle: 'ジャングル',
   },
   game: {
     chances: 'チャンス',
@@ -42,11 +50,21 @@ const ja: TranslationTree = {
     tryAgain: 'もういちど',
     backHome: 'ホームへ',
   },
+  howToPlay: {
+    title: 'あそびかた',
+    step1: 'あきマスをタップ',
+    step2Numbers: 'したの数字をタップ',
+    step2Animals: 'したのどうぶつをタップ',
+    step3: 'タテ・ヨコ・ブロックに同じものをくりかえさない',
+    chances: 'ハートはチャンス。まちがえるとひとつ減るよ。',
+    gotIt: 'わかった！',
+  },
   a11y: {
     backHome: 'ホームにもどる',
     mute: 'ミュート',
     unmute: 'ミュート解除',
     language: '言語',
+    howToPlay: 'あそびかた',
   },
 };
 

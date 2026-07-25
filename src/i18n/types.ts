@@ -15,7 +15,7 @@ export type TranslationTree = {
     chooseLevel: string;
     unlockPrompt: string;
   };
-  modes?: {
+  modes: {
     numbers: string;
     animals: string;
   };
@@ -23,13 +23,13 @@ export type TranslationTree = {
     easy: string;
     medium: string;
     hard: string;
+    /** Display label for level id `profi` (kept as id for saved progress). */
     profi: string;
     master: string;
-    /** Animal-mode level names (English fallback via i18n when untranslated). */
-    cubs?: string;
-    meadow?: string;
-    forest?: string;
-    jungle?: string;
+    cubs: string;
+    meadow: string;
+    forest: string;
+    jungle: string;
   };
   game: {
     chances: string;
@@ -52,11 +52,21 @@ export type TranslationTree = {
     tryAgain: string;
     backHome: string;
   };
+  howToPlay: {
+    title: string;
+    step1: string;
+    step2Numbers: string;
+    step2Animals: string;
+    step3: string;
+    chances: string;
+    gotIt: string;
+  };
   a11y: {
     backHome: string;
     mute: string;
     unmute: string;
     language: string;
+    howToPlay: string;
   };
 };
 

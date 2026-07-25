@@ -14,12 +14,20 @@ const fr: TranslationTree = {
     chooseLevel: 'Choisir un niveau',
     unlockPrompt: 'Gagne encore %{count} puzzles %{level} pour débloquer %{next} !',
   },
+  modes: {
+    numbers: 'Chiffres',
+    animals: 'Animaux',
+  },
   levels: {
     easy: 'Facile',
     medium: 'Moyen',
     hard: 'Difficile',
-    profi: 'Profi',
+    profi: 'Expert',
     master: 'Maître',
+    cubs: 'Oursons',
+    meadow: 'Prairie',
+    forest: 'Forêt',
+    jungle: 'Jungle',
   },
   game: {
     chances: 'Vies',
@@ -42,11 +50,21 @@ const fr: TranslationTree = {
     tryAgain: 'Réessayer',
     backHome: "Retour à l'accueil",
   },
+  howToPlay: {
+    title: 'Comment jouer',
+    step1: 'Touche une case vide',
+    step2Numbers: 'Touche un chiffre en bas',
+    step2Animals: 'Touche un animal en bas',
+    step3: 'Remplis chaque ligne, colonne et bloc — sans doublon',
+    chances: 'Les cœurs sont tes vies. Une erreur en utilise un.',
+    gotIt: 'Compris !',
+  },
   a11y: {
     backHome: "Retourner à l'accueil",
     mute: 'Couper le son',
     unmute: 'Activer le son',
     language: 'Langue',
+    howToPlay: 'Comment jouer',
   },
 };
 
