@@ -9,7 +9,7 @@ import { PressableScale } from './PressableScale';
 
 export function LanguageSelector() {
   const [open, setOpen] = useState(false);
-  const { locale, setLocale, t, isRtl } = useI18n();
+  const { locale, setLocale, t } = useI18n();
   const { hitSize, insets, fontScale, modalMaxWidth } = useLayoutMetrics();
 
   return (
@@ -22,9 +22,8 @@ export function LanguageSelector() {
           styles.button,
           {
             top: Math.max(8, insets.top + 4),
-            ...(isRtl
-              ? { right: Math.max(12, insets.right + 10) }
-              : { left: Math.max(12, insets.left + 10) }),
+            // Match BackButton: always top-left across locales (including RTL).
+            left: Math.max(12, insets.left + 10),
             width: hitSize,
             height: hitSize,
           },

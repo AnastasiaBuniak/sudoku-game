@@ -19,8 +19,9 @@ function BackIcon() {
 
 export function BackButton({ onPress }: Props) {
   const { hitSize, insets } = useLayoutMetrics();
-  const { t, isRtl } = useI18n();
+  const { t } = useI18n();
 
+  // Always top-left for every locale/mode (including RTL) so chrome stays predictable.
   return (
     <PressableScale
       onPress={onPress}
@@ -30,12 +31,9 @@ export function BackButton({ onPress }: Props) {
         styles.button,
         {
           top: Math.max(8, insets.top + 4),
-          ...(isRtl
-            ? { right: Math.max(12, insets.right + 10) }
-            : { left: Math.max(12, insets.left + 10) }),
+          left: Math.max(12, insets.left + 10),
           width: hitSize,
           height: hitSize,
-          transform: isRtl ? [{ scaleX: -1 }] : undefined,
         },
       ]}
       scaleTo={0.92}
