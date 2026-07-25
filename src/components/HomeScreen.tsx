@@ -1,52 +1,57 @@
 import { Image, StyleSheet, Text, View } from 'react-native';
 import {
+  GAME_MODES,
+  getModeConfig,
+  type GameMode,
+} from '../game/modes';
+import {
   getNextUnlockPrompt,
   isLevelUnlocked,
-  LEVELS,
   type LevelProgress,
 } from '../utils/levels';
-import type { Difficulty } from '../utils/sudoku';
 import { useI18n } from '../i18n/I18nProvider';
 import { useLayoutMetrics } from '../hooks/useLayoutMetrics';
 import { borders, brand, colors, fonts, radii, shadows, spacing } from '../theme';
 import { PressableScale } from './PressableScale';
 
 type Props = {
+  mode: GameMode;
   progress: LevelProgress;
-  selectedLevel: Difficulty;
+  selectedLevel: string;
   canContinue: boolean;
-  continueLevel: Difficulty | null;
-  onSelectLevel: (level: Difficulty) => void;
+  continueLevel: string | null;
+  onSelectMode: (mode: GameMode) => void;
+  onSelectLevel: (level: string) => void;
   onContinue: () => void;
   onPlay: () => void;
 };
 
-const levelStyles: Record<
-  Difficulty,
-  { bg: string; border: string; text: string }
-> = {
-  easy: { bg: colors.easyBg, border: colors.easyBorder, text: colors.easyText },
-  medium: { bg: colors.mediumBg, border: colors.mediumBorder, text: colors.mediumText },
-  hard: { bg: colors.hardBg, border: colors.hardBorder, text: colors.hardText },
-  profi: { bg: colors.profiBg, border: colors.profiBorder, text: colors.profiText },
-  master: { bg: colors.masterBg, border: colors.masterBorder, text: colors.masterText },
-};
+const LEVEL_PALETTES = [
+  { bg: colors.easyBg, border: colors.easyBorder, text: colors.easyText },
+  { bg: colors.mediumBg, border: colors.mediumBorder, text: colors.mediumText },
+  { bg: colors.hardBg, border: colors.hardBorder, text: colors.hardText },
+  { bg: colors.profiBg, border: colors.profiBorder, text: colors.profiText },
+  { bg: colors.masterBg, border: colors.masterBorder, text: colors.masterText },
+];
 
 export function HomeScreen({
+  mode,
   progress,
   selectedLevel,
   canContinue,
   continueLevel,
+  onSelectMode,
   onSelectLevel,
   onContinue,
   onPlay,
 }: Props) {
   const layout = useLayoutMetrics();
   const { t } = useI18n();
-  const canPlay = isLevelUnlocked(progress, selectedLevel);
-  const nextUnlock = getNextUnlockPrompt(progress);
+  const config = getModeConfig(mode);
+  const canPlay = isLevelUnlocked(config, progress, selectedLevel);
+  const nextUnlock = getNextUnlockPrompt(config, progress);
   const ctaMaxWidth = Math.min(layout.boardSize || 340, layout.contentMaxWidth);
-  const levelLabel = (level: Difficulty) => t(`levels.${level}`);
+  const levelLabel = (level: string) => t(`levels.${level}`);
 
   return (
     <View
@@ -70,6 +75,24 @@ export function HomeScreen({
         <Text style={[styles.tagline, { fontSize: Math.round(16 * layout.fontScale) }]}>
           {t('brand.tagline')}
         </Text>
+      </View>
+
+      <View style={styles.modeToggle}>
+        {GAME_MODES.map((option) => {
+          const active = option === mode;
+          return (
+            <PressableScale
+              key={option}
+              onPress={() => onSelectMode(option)}
+              style={[styles.modeButton, active && styles.modeButtonActive]}
+              scaleTo={0.96}
+            >
+              <Text style={[styles.modeText, active && styles.modeTextActive]}>
+                {t(`modes.${option}`)}
+              </Text>
+            </PressableScale>
+          );
+        })}
       </View>
 
       <View style={styles.actions}>
@@ -117,18 +140,18 @@ export function HomeScreen({
             <Text style={styles.unlockBannerText}>
               {t('home.unlockPrompt', {
                 count: nextUnlock.remaining,
-                level: levelLabel(nextUnlock.requiredLevel),
-                next: levelLabel(nextUnlock.level),
+                level: levelLabel(nextUnlock.requiredLevel.id),
+                next: levelLabel(nextUnlock.level.id),
               })}
             </Text>
           </View>
         ) : null}
         <View style={styles.levelsGrid}>
-          {LEVELS.map((level) => {
-            const unlocked = isLevelUnlocked(progress, level);
-            const active = unlocked && level === selectedLevel;
+          {config.levels.map((level, index) => {
+            const unlocked = isLevelUnlocked(config, progress, level.id);
+            const active = unlocked && level.id === selectedLevel;
             const palette = unlocked
-              ? levelStyles[level]
+              ? LEVEL_PALETTES[index % LEVEL_PALETTES.length]
               : {
                   bg: colors.lockedBg,
                   border: colors.lockedBorder,
@@ -137,10 +160,10 @@ export function HomeScreen({
 
             return (
               <PressableScale
-                key={level}
+                key={level.id}
                 onPress={() => {
                   if (!unlocked) return;
-                  onSelectLevel(level);
+                  onSelectLevel(level.id);
                 }}
                 disabled={!unlocked}
                 style={[
@@ -155,7 +178,7 @@ export function HomeScreen({
                 ]}
               >
                 <Text style={[styles.levelText, { color: palette.text }]}>
-                  {levelLabel(level)}
+                  {levelLabel(level.id)}
                 </Text>
               </PressableScale>
             );
@@ -197,6 +220,35 @@ const styles = StyleSheet.create({
     color: colors.inkSoft,
     textAlign: 'center',
     paddingHorizontal: spacing.md,
+  },
+  modeToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.tile,
+    borderRadius: radii.pill,
+    borderWidth: borders.thick,
+    borderColor: colors.eraseBorder,
+    padding: 4,
+    ...shadows.button,
+  },
+  modeButton: {
+    paddingHorizontal: 22,
+    paddingVertical: 10,
+    borderRadius: radii.pill,
+  },
+  modeButtonActive: {
+    backgroundColor: colors.ctaBg,
+  },
+  modeText: {
+    fontFamily: fonts.bodyHeavy,
+    fontSize: 15,
+    fontWeight: '800',
+    color: colors.inkSoft,
+  },
+  modeTextActive: {
+    color: colors.ctaText,
   },
   actions: {
     width: '100%',

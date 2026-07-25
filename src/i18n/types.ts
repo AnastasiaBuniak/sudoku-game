@@ -15,12 +15,21 @@ export type TranslationTree = {
     chooseLevel: string;
     unlockPrompt: string;
   };
+  modes?: {
+    numbers: string;
+    animals: string;
+  };
   levels: {
     easy: string;
     medium: string;
     hard: string;
     profi: string;
     master: string;
+    /** Animal-mode level names (English fallback via i18n when untranslated). */
+    cubs?: string;
+    meadow?: string;
+    forest?: string;
+    jungle?: string;
   };
   game: {
     chances: string;

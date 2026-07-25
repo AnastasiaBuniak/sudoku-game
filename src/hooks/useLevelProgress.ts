@@ -1,22 +1,22 @@
 import { useCallback, useEffect, useState } from 'react';
+import { MODE_CONFIGS, type GameMode } from '../game/modes';
+import { recordWin, type LevelProgress, type RecordWinResult } from '../utils/levels';
 import {
-  createDefaultProgress,
-  recordWin,
-  type LevelProgress,
-  type RecordWinResult,
-} from '../utils/levels';
-import { isDifficulty, loadLevelProgress, saveLevelProgress } from '../utils/storage';
-import type { Difficulty } from '../utils/sudoku';
+  createDefaultAllProgress,
+  loadAllProgress,
+  saveAllProgress,
+  type AllProgress,
+} from '../utils/storage';
 
 export function useLevelProgress() {
-  const [progress, setProgress] = useState<LevelProgress>(createDefaultProgress);
+  const [allProgress, setAllProgress] = useState<AllProgress>(createDefaultAllProgress);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    loadLevelProgress().then((loaded) => {
+    loadAllProgress().then((loaded) => {
       if (cancelled) return;
-      setProgress(loaded);
+      setAllProgress(loaded);
       setReady(true);
     });
     return () => {
@@ -24,23 +24,25 @@ export function useLevelProgress() {
     };
   }, []);
 
-  const persist = useCallback((next: LevelProgress) => {
-    setProgress(next);
-    void saveLevelProgress(next);
+  const persist = useCallback((next: AllProgress) => {
+    setAllProgress(next);
+    void saveAllProgress(next);
   }, []);
 
-  const completeGame = useCallback(
-    (level: Difficulty): RecordWinResult => {
-      if (!isDifficulty(level)) {
-        return { progress, unlockedLevel: null };
-      }
-
-      const result = recordWin(progress, level);
-      persist(result.progress);
-      return result;
-    },
-    [persist, progress],
+  const getProgress = useCallback(
+    (mode: GameMode): LevelProgress => allProgress[mode],
+    [allProgress],
   );
 
-  return { progress, ready, completeGame };
+  const completeGame = useCallback(
+    (mode: GameMode, levelId: string): RecordWinResult => {
+      const config = MODE_CONFIGS[mode];
+      const result = recordWin(config, allProgress[mode], levelId);
+      persist({ ...allProgress, [mode]: result.progress });
+      return result;
+    },
+    [allProgress, persist],
+  );
+
+  return { allProgress, getProgress, ready, completeGame };
 }

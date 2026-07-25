@@ -34,6 +34,7 @@ import { track } from './src/analytics';
 import { AnalyticsProvider } from './src/analytics/AnalyticsProvider';
 import { I18nProvider, useI18n } from './src/i18n/I18nProvider';
 import { borders, brand, colors, fonts, radii, spacing } from './src/theme';
+import { getLevelConfig, getModeConfig, type GameMode } from './src/game/modes';
 import { isLevelUnlocked } from './src/utils/levels';
 import { MAX_MISTAKES, type PersistedGame } from './src/utils/storage';
 import {
@@ -46,15 +47,20 @@ import {
   isGivenCell,
   type Board,
   type CheerEvent,
-  type Difficulty,
 } from './src/utils/sudoku';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
-function createNewGame(difficulty: Difficulty): PersistedGame {
-  const { puzzle, solution } = generatePuzzle(difficulty);
+function createNewGame(mode: GameMode, levelId: string): PersistedGame {
+  const level = getLevelConfig(mode, levelId);
+  if (!level) {
+    throw new Error(`Unknown level "${levelId}" for mode "${mode}"`);
+  }
+  const { puzzle, solution } = generatePuzzle(level.grid, level.clues);
   return {
-    difficulty,
+    mode,
+    levelId,
+    grid: level.grid,
     board: cloneBoard(puzzle),
     given: cloneBoard(puzzle),
     solution,
@@ -92,12 +98,13 @@ function AppContent() {
   const { t, ready: localeReady, locale } = useI18n();
 
   const { muted, toggleMute, playCorrect, ensureMusicPlaying } = useGameAudio();
-  const { progress, ready: progressReady, completeGame } = useLevelProgress();
+  const { getProgress, ready: progressReady, completeGame } = useLevelProgress();
   const {
     session,
     ready: sessionReady,
     canContinue,
     setScreen,
+    setMode,
     setSelectedLevel,
     setGame,
     updateGame,
@@ -105,7 +112,9 @@ function AppContent() {
   } = usePersistedSession();
 
   const ready = fontsReady && progressReady && sessionReady && localeReady;
-  const { screen, selectedLevel, game } = session;
+  const { screen, mode, selectedLevels, game } = session;
+  const selectedLevel = selectedLevels[mode];
+  const progress = getProgress(mode);
 
   const [selected, setSelected] = useState<{ row: number; col: number } | null>(null);
   const [unlockMessage, setUnlockMessage] = useState<string | null>(null);
@@ -135,8 +144,11 @@ function AppContent() {
     }
     if (lossTrackedRef.current) return;
     lossTrackedRef.current = true;
-    track({ name: 'puzzle_lost', props: { level: game.difficulty, locale } });
-  }, [game?.lost, game?.difficulty, locale]);
+    track({
+      name: 'puzzle_lost',
+      props: { mode: game.mode, level: game.levelId, locale },
+    });
+  }, [game?.lost, game?.mode, game?.levelId, locale]);
 
   const incorrectCells = useMemo(() => {
     if (!game) return new Set<string>();
@@ -147,9 +159,10 @@ function AppContent() {
     const disabled = new Set<number>();
     if (!game) return disabled;
 
+    const size = game.grid.size;
     const counts = new Map<number, number>();
-    for (let row = 0; row < 9; row += 1) {
-      for (let col = 0; col < 9; col += 1) {
+    for (let row = 0; row < size; row += 1) {
+      for (let col = 0; col < size; col += 1) {
         const value = game.board[row][col];
         if (value === 0 || value !== game.solution[row][col]) continue;
         counts.set(value, (counts.get(value) ?? 0) + 1);
@@ -157,21 +170,21 @@ function AppContent() {
     }
 
     counts.forEach((count, value) => {
-      if (count >= 9) disabled.add(value);
+      if (count >= size) disabled.add(value);
     });
     return disabled;
   }, [game]);
 
   const startFreshGame = useCallback(
-    (difficulty: Difficulty) => {
+    (nextMode: GameMode, levelId: string) => {
       setSelected(null);
       setUnlockMessage(null);
       setWinDismissed(false);
       setCheer(null);
       winHandledRef.current = false;
       lossTrackedRef.current = false;
-      track({ name: 'puzzle_started', props: { level: difficulty, locale } });
-      setGame(createNewGame(difficulty), 'game');
+      track({ name: 'puzzle_started', props: { mode: nextMode, level: levelId, locale } });
+      setGame(createNewGame(nextMode, levelId), 'game');
     },
     [locale, setGame],
   );
@@ -193,24 +206,34 @@ function AppContent() {
     if (!canContinue || !game) return;
     ensureMusicPlaying();
     setSelected(null);
-    track({ name: 'puzzle_continued', props: { level: game.difficulty, locale } });
+    track({
+      name: 'puzzle_continued',
+      props: { mode: game.mode, level: game.levelId, locale },
+    });
     setScreen('game');
   }, [canContinue, ensureMusicPlaying, game, locale, setScreen]);
 
   const handlePlay = useCallback(() => {
-    if (!isLevelUnlocked(progress, selectedLevel)) return;
+    const config = getModeConfig(mode);
+    if (!isLevelUnlocked(config, progress, selectedLevel)) return;
     ensureMusicPlaying();
-    startFreshGame(selectedLevel);
-  }, [ensureMusicPlaying, progress, selectedLevel, startFreshGame]);
+    startFreshGame(mode, selectedLevel);
+  }, [ensureMusicPlaying, mode, progress, selectedLevel, startFreshGame]);
 
   useEffect(() => {
     if (!game?.won || game.winCounted || winHandledRef.current) return;
     winHandledRef.current = true;
 
-    const result = completeGame(game.difficulty);
-    track({ name: 'puzzle_won', props: { level: game.difficulty, locale } });
+    const result = completeGame(game.mode, game.levelId);
+    track({
+      name: 'puzzle_won',
+      props: { mode: game.mode, level: game.levelId, locale },
+    });
     if (result.unlockedLevel) {
-      track({ name: 'level_unlocked', props: { level: result.unlockedLevel, locale } });
+      track({
+        name: 'level_unlocked',
+        props: { mode: game.mode, level: result.unlockedLevel, locale },
+      });
     }
     setUnlockMessage(
       result.unlockedLevel
@@ -224,7 +247,7 @@ function AppContent() {
     if (!game || !game.won) {
       winHandledRef.current = false;
     }
-  }, [game?.won, game?.difficulty]);
+  }, [game?.won, game?.levelId]);
 
   const updateCell = (row: number, col: number, value: number) => {
     if (!game || isGivenCell(game.given, row, col) || game.won || game.lost) return;
@@ -245,8 +268,9 @@ function AppContent() {
       track({
         name: 'cell_wrong',
         props: {
+          mode: game.mode,
           digit: value,
-          level: game.difficulty,
+          level: game.levelId,
           locale,
           chances_left: mistakesLeft,
         },
@@ -255,10 +279,11 @@ function AppContent() {
       void playCorrect();
       track({
         name: 'cell_correct',
-        props: { digit: value, level: game.difficulty, locale },
+        props: { mode: game.mode, digit: value, level: game.levelId, locale },
       });
-      const boxWasComplete = isBoxComplete(game.board, game.solution, row, col);
-      const boxComplete = !boxWasComplete && isBoxComplete(nextBoard, game.solution, row, col);
+      const boxWasComplete = isBoxComplete(game.board, game.solution, row, col, game.grid);
+      const boxComplete =
+        !boxWasComplete && isBoxComplete(nextBoard, game.solution, row, col, game.grid);
       cheerIdRef.current += 1;
       setCheer({
         id: cheerIdRef.current,
@@ -270,7 +295,7 @@ function AppContent() {
       if (didCompleteDigit(game.board, nextBoard, game.solution, value)) {
         track({
           name: 'number_completed',
-          props: { digit: value, level: game.difficulty, locale },
+          props: { mode: game.mode, digit: value, level: game.levelId, locale },
         });
       }
     }
@@ -339,14 +364,20 @@ function AppContent() {
         >
           {screen === 'home' || !game ? (
             <HomeScreen
+              mode={mode}
               progress={progress}
               selectedLevel={selectedLevel}
               canContinue={canContinue}
-              continueLevel={canContinue && game ? game.difficulty : null}
+              continueLevel={canContinue && game ? game.levelId : null}
+              onSelectMode={(nextMode) => {
+                ensureMusicPlaying();
+                setMode(nextMode);
+                track({ name: 'mode_selected', props: { mode: nextMode, locale } });
+              }}
               onSelectLevel={(level) => {
                 ensureMusicPlaying();
-                setSelectedLevel(level);
-                track({ name: 'level_selected', props: { level, locale } });
+                setSelectedLevel(mode, level);
+                track({ name: 'level_selected', props: { mode, level, locale } });
               }}
               onContinue={handleContinue}
               onPlay={handlePlay}
@@ -366,7 +397,7 @@ function AppContent() {
                 <Text style={[styles.title, { fontSize: layout.playTitleSize }]}>{brand.name}</Text>
                 <View style={styles.headerMeta}>
                   <View style={styles.subtitleChip}>
-                    <Text style={styles.subtitle}>{t(`levels.${game.difficulty}`)}</Text>
+                    <Text style={styles.subtitle}>{t(`levels.${game.levelId}`)}</Text>
                   </View>
                   <MistakesCounter mistakesLeft={game.mistakesLeft} />
                 </View>
@@ -376,6 +407,8 @@ function AppContent() {
                 <SudokuBoard
                   board={game.board}
                   given={game.given}
+                  grid={game.grid}
+                  symbol={getModeConfig(game.mode).symbol}
                   selected={selected}
                   incorrectCells={incorrectCells}
                   cheer={cheer}
@@ -392,13 +425,15 @@ function AppContent() {
                 onNumberPress={handleNumberPress}
                 onErase={handleErase}
                 disabledNumbers={disabledNumbers}
+                count={game.grid.size}
+                symbol={getModeConfig(game.mode).symbol}
                 maxWidth={layout.padMaxWidth}
               />
 
               <GameControls
                 onNewGame={() => {
                   ensureMusicPlaying();
-                  startFreshGame(game.difficulty);
+                  startFreshGame(game.mode, game.levelId);
                 }}
               />
             </View>
@@ -411,7 +446,7 @@ function AppContent() {
         unlockMessage={unlockMessage}
         onPlayAgain={() => {
           if (!game) return;
-          startFreshGame(game.difficulty);
+          startFreshGame(game.mode, game.levelId);
         }}
         onHome={goHome}
         onClose={() => setWinDismissed(true)}
@@ -421,7 +456,7 @@ function AppContent() {
         visible={Boolean(game?.lost && screen === 'game')}
         onTryAgain={() => {
           if (!game) return;
-          startFreshGame(game.difficulty);
+          startFreshGame(game.mode, game.levelId);
         }}
         onHome={goHome}
       />
@@ -496,4 +531,3 @@ const styles = StyleSheet.create({
     color: colors.subtitleText,
   },
 });
-

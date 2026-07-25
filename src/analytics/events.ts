@@ -1,27 +1,34 @@
+import type { GameMode } from '../game/modes';
 import type { LocaleCode } from '../i18n/types';
-import type { Difficulty } from '../utils/sudoku';
 
 /** Anonymous product events only — no user IDs or device advertising IDs. */
 export type AnalyticsEvent =
   | { name: 'app_open'; props: { locale: LocaleCode } }
   | { name: 'locale_changed'; props: { locale: LocaleCode } }
-  | { name: 'level_selected'; props: { level: Difficulty; locale: LocaleCode } }
-  | { name: 'level_unlocked'; props: { level: Difficulty; locale: LocaleCode } }
-  | { name: 'puzzle_started'; props: { level: Difficulty; locale: LocaleCode } }
-  | { name: 'puzzle_continued'; props: { level: Difficulty; locale: LocaleCode } }
-  | { name: 'puzzle_won'; props: { level: Difficulty; locale: LocaleCode } }
-  | { name: 'puzzle_lost'; props: { level: Difficulty; locale: LocaleCode } }
+  | { name: 'mode_selected'; props: { mode: GameMode; locale: LocaleCode } }
+  | { name: 'level_selected'; props: { mode: GameMode; level: string; locale: LocaleCode } }
+  | { name: 'level_unlocked'; props: { mode: GameMode; level: string; locale: LocaleCode } }
+  | { name: 'puzzle_started'; props: { mode: GameMode; level: string; locale: LocaleCode } }
+  | { name: 'puzzle_continued'; props: { mode: GameMode; level: string; locale: LocaleCode } }
+  | { name: 'puzzle_won'; props: { mode: GameMode; level: string; locale: LocaleCode } }
+  | { name: 'puzzle_lost'; props: { mode: GameMode; level: string; locale: LocaleCode } }
   | {
       name: 'cell_correct';
-      props: { digit: number; level: Difficulty; locale: LocaleCode };
+      props: { mode: GameMode; digit: number; level: string; locale: LocaleCode };
     }
   | {
       name: 'cell_wrong';
-      props: { digit: number; level: Difficulty; locale: LocaleCode; chances_left: number };
+      props: {
+        mode: GameMode;
+        digit: number;
+        level: string;
+        locale: LocaleCode;
+        chances_left: number;
+      };
     }
   | {
       name: 'number_completed';
-      props: { digit: number; level: Difficulty; locale: LocaleCode };
+      props: { mode: GameMode; digit: number; level: string; locale: LocaleCode };
     };
 
 export type AnalyticsBackend = {

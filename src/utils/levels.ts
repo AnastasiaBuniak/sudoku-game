@@ -1,108 +1,96 @@
-import type { Difficulty } from './sudoku';
+import type { LevelConfig, ModeConfig } from '../game/modes';
 
-export const LEVELS: Difficulty[] = ['easy', 'medium', 'hard', 'profi', 'master'];
-
-export const LEVEL_LABELS: Record<Difficulty, string> = {
-  easy: 'Easy',
-  medium: 'Medium',
-  hard: 'Hard',
-  profi: 'Profi',
-  master: 'Master',
-};
-
-/** Wins needed at this level to unlock the next one. */
-export const WINS_TO_UNLOCK_NEXT: Record<Difficulty, number> = {
-  easy: 3,
-  medium: 3,
-  hard: 5,
-  profi: 5,
-  master: 0,
-};
-
+/** Progress within a single mode. Wins are keyed by level id. */
 export type LevelProgress = {
-  /** Highest unlocked level index in LEVELS (0 = easy). */
+  /** Highest unlocked level index within the mode's ordered level list. */
   highestUnlockedIndex: number;
-  /** Completed games per level. */
-  wins: Record<Difficulty, number>;
+  /** Completed games per level id. */
+  wins: Record<string, number>;
 };
 
-export function createDefaultProgress(): LevelProgress {
-  return {
-    highestUnlockedIndex: 0,
-    wins: {
-      easy: 0,
-      medium: 0,
-      hard: 0,
-      profi: 0,
-      master: 0,
-    },
-  };
+export function createDefaultProgress(config?: ModeConfig): LevelProgress {
+  const wins: Record<string, number> = {};
+  config?.levels.forEach((level) => {
+    wins[level.id] = 0;
+  });
+  return { highestUnlockedIndex: 0, wins };
 }
 
-export function isLevelUnlocked(progress: LevelProgress, level: Difficulty): boolean {
-  return LEVELS.indexOf(level) <= progress.highestUnlockedIndex;
+function levelIndex(config: ModeConfig, levelId: string): number {
+  return config.levels.findIndex((level) => level.id === levelId);
 }
 
-export function getNextLevel(level: Difficulty): Difficulty | null {
-  const index = LEVELS.indexOf(level);
-  if (index < 0 || index >= LEVELS.length - 1) return null;
-  return LEVELS[index + 1];
+export function isLevelUnlocked(
+  config: ModeConfig,
+  progress: LevelProgress,
+  levelId: string,
+): boolean {
+  const index = levelIndex(config, levelId);
+  return index >= 0 && index <= progress.highestUnlockedIndex;
 }
 
-export function getUnlockRequirement(level: Difficulty): number {
-  return WINS_TO_UNLOCK_NEXT[level];
+export function getNextLevel(config: ModeConfig, levelId: string): LevelConfig | null {
+  const index = levelIndex(config, levelId);
+  if (index < 0 || index >= config.levels.length - 1) return null;
+  return config.levels[index + 1];
+}
+
+export function getWins(progress: LevelProgress, levelId: string): number {
+  return progress.wins[levelId] ?? 0;
 }
 
 /** The next locked level and how many wins remain to unlock it. */
-export function getNextUnlockPrompt(progress: LevelProgress): {
-  level: Difficulty;
-  requiredLevel: Difficulty;
-  remaining: number;
-} | null {
+export function getNextUnlockPrompt(
+  config: ModeConfig,
+  progress: LevelProgress,
+): { level: LevelConfig; requiredLevel: LevelConfig; remaining: number } | null {
   const nextIndex = progress.highestUnlockedIndex + 1;
-  if (nextIndex >= LEVELS.length) return null;
+  if (nextIndex >= config.levels.length) return null;
 
-  const nextLevel = LEVELS[nextIndex];
-  const requiredLevel = LEVELS[progress.highestUnlockedIndex];
-  const needed = getUnlockRequirement(requiredLevel);
-  const remaining = Math.max(0, needed - progress.wins[requiredLevel]);
+  const nextLevel = config.levels[nextIndex];
+  const requiredLevel = config.levels[progress.highestUnlockedIndex];
+  const needed = requiredLevel.winsToUnlockNext;
+  const remaining = Math.max(0, needed - getWins(progress, requiredLevel.id));
 
-  return {
-    level: nextLevel,
-    requiredLevel,
-    remaining,
-  };
+  return { level: nextLevel, requiredLevel, remaining };
 }
 
 export type RecordWinResult = {
   progress: LevelProgress;
-  unlockedLevel: Difficulty | null;
+  /** The newly unlocked level id, if any. */
+  unlockedLevel: string | null;
 };
 
 /** Record a completed game and unlock the next level when the threshold is met. */
-export function recordWin(progress: LevelProgress, level: Difficulty): RecordWinResult {
-  if (!isLevelUnlocked(progress, level)) {
+export function recordWin(
+  config: ModeConfig,
+  progress: LevelProgress,
+  levelId: string,
+): RecordWinResult {
+  if (!isLevelUnlocked(config, progress, levelId)) {
     return { progress, unlockedLevel: null };
   }
 
-  const nextWins = { ...progress.wins, [level]: progress.wins[level] + 1 };
+  const nextWins = { ...progress.wins, [levelId]: getWins(progress, levelId) + 1 };
   let highestUnlockedIndex = progress.highestUnlockedIndex;
-  let unlockedLevel: Difficulty | null = null;
+  let unlockedLevel: string | null = null;
 
-  const levelIndex = LEVELS.indexOf(level);
-  const needed = getUnlockRequirement(level);
-  const next = getNextLevel(level);
+  const index = levelIndex(config, levelId);
+  const level = config.levels[index];
+  const next = getNextLevel(config, levelId);
 
-  if (next && needed > 0 && nextWins[level] >= needed && highestUnlockedIndex === levelIndex) {
-    highestUnlockedIndex = levelIndex + 1;
-    unlockedLevel = next;
+  if (
+    next &&
+    level.winsToUnlockNext > 0 &&
+    nextWins[levelId] >= level.winsToUnlockNext &&
+    highestUnlockedIndex === index
+  ) {
+    highestUnlockedIndex = index + 1;
+    unlockedLevel = next.id;
   }
 
   return {
-    progress: {
-      highestUnlockedIndex,
-      wins: nextWins,
-    },
+    progress: { highestUnlockedIndex, wins: nextWins },
     unlockedLevel,
   };
 }
