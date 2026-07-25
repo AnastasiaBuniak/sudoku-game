@@ -1,38 +1,53 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import type { SymbolKind } from '../game/modes';
 import { useI18n } from '../i18n/I18nProvider';
 import { borders, colors, fonts, radii, shadows, spacing } from '../theme';
 import { useLayoutMetrics } from '../hooks/useLayoutMetrics';
+import { AnimalGlyph } from './AnimalGlyph';
 import { PressableScale } from './PressableScale';
 
 type Props = {
   onNumberPress: (value: number) => void;
   onErase: () => void;
   disabledNumbers: Set<number>;
+  /** How many symbols the pad offers (matches the grid size). */
+  count: number;
+  symbol: SymbolKind;
   maxWidth: number;
 };
 
-const NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-export function NumberPad({ onNumberPress, onErase, disabledNumbers, maxWidth }: Props) {
+export function NumberPad({
+  onNumberPress,
+  onErase,
+  disabledNumbers,
+  count,
+  symbol,
+  maxWidth,
+}: Props) {
   const { fontScale, isCompact, gap } = useLayoutMetrics();
   const { t } = useI18n();
-  const remainingNumbers = NUMBERS.filter((number) => !disabledNumbers.has(number));
+  const values = Array.from({ length: count }, (_, index) => index + 1);
+  const remaining = values.filter((value) => !disabledNumbers.has(value));
   const cellGap = isCompact ? 4 : 6;
-  const approxCell = maxWidth / 9;
-  const digitSize = Math.max(13, Math.round(approxCell * 0.42 * fontScale));
+
+  // Keep buttons from ballooning when a mode only has a few symbols (e.g. 4×4).
+  const columns = Math.max(count, 5);
+  const buttonSize = Math.floor((maxWidth - cellGap * (columns - 1)) / columns);
+  const digitSize = Math.max(13, Math.round(buttonSize * 0.42 * fontScale));
+  const glyphSize = Math.round(buttonSize * 0.66);
 
   return (
     <View style={[styles.container, { maxWidth, width: '100%', gap: Math.max(spacing.sm, gap) }]}>
       <View style={[styles.row, { gap: cellGap }]}>
-        {remainingNumbers.map((number) => {
-          const gummy = colors.gummy[number - 1];
+        {remaining.map((value) => {
+          const gummy = colors.gummy[(value - 1) % colors.gummy.length];
           return (
             <PressableScale
-              key={number}
-              onPress={() => onNumberPress(number)}
+              key={value}
+              onPress={() => onNumberPress(value)}
               scaleTo={0.8}
-              style={styles.buttonWrap}
+              style={[styles.buttonWrap, { width: buttonSize, height: buttonSize }]}
             >
               <LinearGradient
                 colors={[gummy.gloss, gummy.bg, gummy.border]}
@@ -41,7 +56,11 @@ export function NumberPad({ onNumberPress, onErase, disabledNumbers, maxWidth }:
                 style={styles.button}
               >
                 <View style={styles.buttonShine} />
-                <Text style={[styles.buttonText, { fontSize: digitSize }]}>{number}</Text>
+                {symbol === 'animal' ? (
+                  <AnimalGlyph value={value} size={glyphSize} />
+                ) : (
+                  <Text style={[styles.buttonText, { fontSize: digitSize }]}>{value}</Text>
+                )}
               </LinearGradient>
             </PressableScale>
           );
@@ -63,12 +82,11 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     width: '100%',
+    flexWrap: 'wrap',
   },
   buttonWrap: {
-    flex: 1,
-    aspectRatio: 1,
     borderRadius: radii.sm,
     ...shadows.button,
   },

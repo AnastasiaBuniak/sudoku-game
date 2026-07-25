@@ -13,12 +13,20 @@ const en: TranslationTree = {
     chooseLevel: 'Choose a level',
     unlockPrompt: 'Win %{count} more %{level} puzzles to unlock %{next}!',
   },
+  modes: {
+    numbers: 'Numbers',
+    animals: 'Animals',
+  },
   levels: {
     easy: 'Easy',
     medium: 'Medium',
     hard: 'Hard',
     profi: 'Profi',
     master: 'Master',
+    cubs: 'Cubs',
+    meadow: 'Meadow',
+    forest: 'Forest',
+    jungle: 'Jungle',
   },
   game: {
     chances: 'Chances',

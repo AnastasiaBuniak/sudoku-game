@@ -7,14 +7,17 @@ import {
   View,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import type { Board } from '../utils/sudoku';
-import type { CheerEvent } from '../utils/sudoku';
+import type { Board, CheerEvent, GridSpec } from '../utils/sudoku';
+import type { SymbolKind } from '../game/modes';
 import { useI18n } from '../i18n/I18nProvider';
 import { colors, fonts, radii, shadows } from '../theme';
+import { AnimalGlyph } from './AnimalGlyph';
 
 type Props = {
   board: Board;
   given: Board;
+  grid: GridSpec;
+  symbol: SymbolKind;
   selected: { row: number; col: number } | null;
   incorrectCells: Set<string>;
   cheer: CheerEvent | null;
@@ -22,11 +25,12 @@ type Props = {
   onSelect: (row: number, col: number) => void;
 };
 
-type DigitProps = {
+type SymbolProps = {
   value: number;
+  symbol: SymbolKind;
   isGiven: boolean;
   isIncorrect: boolean;
-  fontSize: number;
+  cellSize: number;
   celebrate: boolean;
 };
 
@@ -113,7 +117,19 @@ function CellSparkles({ active, strong }: { active: boolean; strong: boolean }) 
   );
 }
 
-function BoardDigit({ value, isGiven, isIncorrect, fontSize, celebrate }: DigitProps) {
+function BoardDigit({
+  value,
+  isGiven,
+  isIncorrect,
+  fontSize,
+  celebrate,
+}: {
+  value: number;
+  isGiven: boolean;
+  isIncorrect: boolean;
+  fontSize: number;
+  celebrate: boolean;
+}) {
   const flash = useRef(new Animated.Value(0)).current;
   const previous = useRef(value);
 
@@ -174,6 +190,26 @@ function BoardDigit({ value, isGiven, isIncorrect, fontSize, celebrate }: DigitP
         {value}
       </Animated.Text>
     </View>
+  );
+}
+
+function BoardSymbol({ value, symbol, isGiven, isIncorrect, cellSize, celebrate }: SymbolProps) {
+  if (value === 0) return null;
+
+  if (symbol === 'animal') {
+    const glyphSize = Math.round(cellSize * 0.74);
+    return <AnimalGlyph value={value} size={glyphSize} dimmed={isIncorrect} />;
+  }
+
+  const fontSize = Math.max(14, Math.round(cellSize * 0.56));
+  return (
+    <BoardDigit
+      value={value}
+      isGiven={isGiven}
+      isIncorrect={isIncorrect}
+      fontSize={fontSize}
+      celebrate={celebrate}
+    />
   );
 }
 
@@ -276,6 +312,8 @@ function PillowTile({
 export function SudokuBoard({
   board,
   given,
+  grid,
+  symbol,
   selected,
   incorrectCells,
   cheer,
@@ -283,20 +321,30 @@ export function SudokuBoard({
   onSelect,
 }: Props) {
   const { t } = useI18n();
+  const { size, boxRows, boxCols } = grid;
   const framePad = Math.max(10, Math.round(boardSize * 0.035));
   const cellGap = Math.max(3, Math.round(boardSize * 0.012));
   const blockGap = Math.max(7, Math.round(boardSize * 0.028));
   const inner = boardSize - framePad * 2;
-  const cellSize = (inner - cellGap * 6 - blockGap * 2) / 9;
-  const digitSize = Math.max(14, Math.round(cellSize * 0.56));
+
+  // Cells are square. Horizontal gaps set the cell size; vertical gaps then
+  // determine the board's height so different box shapes still look tidy.
+  const hBlockGaps = size / boxCols - 1;
+  const hCellGaps = size - 1 - hBlockGaps;
+  const cellSize = Math.floor((inner - blockGap * hBlockGaps - cellGap * hCellGaps) / size);
+  const vBlockGaps = size / boxRows - 1;
+  const vCellGaps = size - 1 - vBlockGaps;
+  const gridHeight = cellSize * size + blockGap * vBlockGaps + cellGap * vCellGaps;
+  const frameHeight = gridHeight + framePad * 2;
+
   const tileRadius = Math.max(8, cellSize * 0.32);
   const selectedValue = selected !== null ? board[selected.row][selected.col] : 0;
   const frameRadius = radii.xxl + 4;
   const cheerBox =
     cheer?.boxComplete != null && cheer.boxComplete
       ? {
-          row: Math.floor(cheer.row / 3),
-          col: Math.floor(cheer.col / 3),
+          row: Math.floor(cheer.row / boxRows),
+          col: Math.floor(cheer.col / boxCols),
         }
       : null;
   const niceOpacity = useRef(new Animated.Value(0)).current;
@@ -328,7 +376,7 @@ export function SudokuBoard({
     <View
       style={[
         styles.shadowWrap,
-        { width: boardSize, height: boardSize, borderRadius: frameRadius },
+        { width: boardSize, height: frameHeight, borderRadius: frameRadius },
       ]}
     >
       <LinearGradient
@@ -346,30 +394,31 @@ export function SudokuBoard({
               style={[
                 styles.row,
                 {
-                  marginBottom: rowIndex === 8 ? 0 : rowIndex % 3 === 2 ? blockGap : cellGap,
+                  marginBottom:
+                    rowIndex === size - 1 ? 0 : (rowIndex + 1) % boxRows === 0 ? blockGap : cellGap,
                 },
               ]}
             >
               {row.map((value, colIndex) => {
                 const isSelected = selected?.row === rowIndex && selected?.col === colIndex;
-                const isGiven = given[rowIndex][colIndex] !== 0;
+                const isGivenCell = given[rowIndex][colIndex] !== 0;
                 const isIncorrect = incorrectCells.has(`${rowIndex}-${colIndex}`);
                 const isRelated =
                   selected !== null &&
                   !isSelected &&
                   (selected.row === rowIndex ||
                     selected.col === colIndex ||
-                    (Math.floor(selected.row / 3) === Math.floor(rowIndex / 3) &&
-                      Math.floor(selected.col / 3) === Math.floor(colIndex / 3)));
+                    (Math.floor(selected.row / boxRows) === Math.floor(rowIndex / boxRows) &&
+                      Math.floor(selected.col / boxCols) === Math.floor(colIndex / boxCols)));
                 const isSameNumber = value !== 0 && value === selectedValue;
                 const marginRight =
-                  colIndex === 8 ? 0 : colIndex % 3 === 2 ? blockGap : cellGap;
+                  colIndex === size - 1 ? 0 : (colIndex + 1) % boxCols === 0 ? blockGap : cellGap;
                 const celebrate =
                   cheer !== null && cheer.row === rowIndex && cheer.col === colIndex;
                 const boxCelebrate =
                   cheerBox !== null &&
-                  Math.floor(rowIndex / 3) === cheerBox.row &&
-                  Math.floor(colIndex / 3) === cheerBox.col;
+                  Math.floor(rowIndex / boxRows) === cheerBox.row &&
+                  Math.floor(colIndex / boxCols) === cheerBox.col;
 
                 return (
                   <View key={`cell-${rowIndex}-${colIndex}`} style={{ marginRight }}>
@@ -384,11 +433,12 @@ export function SudokuBoard({
                       boxCelebrate={boxCelebrate}
                       onPress={() => onSelect(rowIndex, colIndex)}
                     >
-                      <BoardDigit
+                      <BoardSymbol
                         value={value}
-                        isGiven={isGiven}
+                        symbol={symbol}
+                        isGiven={isGivenCell}
                         isIncorrect={isIncorrect}
-                        fontSize={digitSize}
+                        cellSize={cellSize}
                         celebrate={celebrate}
                       />
                     </PillowTile>

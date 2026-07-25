@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { GameMode } from '../game/modes';
 import {
   createDefaultSession,
   hasUnfinishedGame,
@@ -8,7 +9,6 @@ import {
   type PersistedSession,
   type Screen,
 } from '../utils/storage';
-import type { Difficulty } from '../utils/sudoku';
 
 export function usePersistedSession() {
   const [session, setSession] = useState<PersistedSession>(createDefaultSession);
@@ -44,9 +44,20 @@ export function usePersistedSession() {
     [persist],
   );
 
+  const setMode = useCallback(
+    (mode: GameMode) => {
+      persist({ ...sessionRef.current, mode });
+    },
+    [persist],
+  );
+
   const setSelectedLevel = useCallback(
-    (selectedLevel: Difficulty) => {
-      persist({ ...sessionRef.current, selectedLevel });
+    (mode: GameMode, levelId: string) => {
+      const current = sessionRef.current;
+      persist({
+        ...current,
+        selectedLevels: { ...current.selectedLevels, [mode]: levelId },
+      });
     },
     [persist],
   );
@@ -57,8 +68,11 @@ export function usePersistedSession() {
       persist({
         ...current,
         game,
+        mode: game?.mode ?? current.mode,
         screen: screen ?? current.screen,
-        selectedLevel: game?.difficulty ?? current.selectedLevel,
+        selectedLevels: game
+          ? { ...current.selectedLevels, [game.mode]: game.levelId }
+          : current.selectedLevels,
       });
     },
     [persist],
@@ -92,6 +106,7 @@ export function usePersistedSession() {
     ready,
     canContinue: hasUnfinishedGame(session.game),
     setScreen,
+    setMode,
     setSelectedLevel,
     setGame,
     updateGame,
