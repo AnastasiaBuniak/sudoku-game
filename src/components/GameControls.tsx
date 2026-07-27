@@ -42,6 +42,5 @@ const styles = StyleSheet.create({
   newGameText: {
     fontFamily: fonts.bodyHeavy,
     color: colors.inkSoft,
-    fontWeight: '800',
   },
 });

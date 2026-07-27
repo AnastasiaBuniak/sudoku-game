@@ -57,7 +57,8 @@ export type TranslationTree = {
     step1: string;
     step2Numbers: string;
     step2Animals: string;
-    step3: string;
+    step3Numbers: string;
+    step3Animals: string;
     chances: string;
     gotIt: string;
   };

@@ -70,7 +70,6 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: fonts.bodyHeavy,
     fontSize: 13,
-    fontWeight: '800',
     color: colors.chanceLabel,
   },
   pips: {

@@ -110,7 +110,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontFamily: fonts.display,
-    fontWeight: '700',
     color: '#FFFFFF',
     textShadowColor: 'rgba(0,0,0,0.15)',
     textShadowOffset: { width: 0, height: 1 },
@@ -128,7 +127,6 @@ const styles = StyleSheet.create({
   },
   eraseText: {
     fontFamily: fonts.bodyHeavy,
-    fontWeight: '800',
     color: colors.eraseText,
   },
 });

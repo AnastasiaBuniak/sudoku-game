@@ -30,10 +30,6 @@ type Props = {
   onPlay: (levelId: string) => void;
 };
 
-function clamp(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value));
-}
-
 export function HomeScreen({
   mode,
   progress,
@@ -88,12 +84,6 @@ export function HomeScreen({
     ]).start();
   };
 
-  // Top-anchor with a small screen-scaled inset so tall phones aren't glued to
-  // the status bar, but mode/content height changes never re-center the page.
-  const topInset = layout.isCompact
-    ? layout.pagePaddingY
-    : Math.round(clamp(layout.height * 0.035, 16, layout.isTablet ? 40 : 28));
-
   // Reserved slots so Continue / unlock / level-count changes don't reflow neighbors.
   const primaryCtaHeight = Math.round(88 * layout.scale);
   const secondaryCtaHeight = Math.round(36 * layout.scale);
@@ -112,7 +102,6 @@ export function HomeScreen({
         {
           maxWidth: Math.min(layout.contentMaxWidth, layout.width - layout.pagePaddingX * 2),
           gap: layout.gap + 6,
-          paddingTop: topInset,
           paddingBottom: layout.pagePaddingY,
         },
       ]}
@@ -131,7 +120,7 @@ export function HomeScreen({
         >
           {/* Keep both heroes mounted so mode switches don't reload/remeasure. */}
           <Image
-            source={require('../../assets/icon.png')}
+            source={require('../../assets/icon-numbers.png')}
             style={[
               styles.heroImage,
               { width: heroSize, height: heroSize },
@@ -358,7 +347,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: fonts.display,
-    fontWeight: '700',
     color: colors.title,
     textShadowColor: colors.titleShadow,
     textShadowOffset: { width: 0, height: 2 },
@@ -367,7 +355,6 @@ const styles = StyleSheet.create({
   },
   tagline: {
     fontFamily: fonts.body,
-    fontWeight: '700',
     color: colors.inkSoft,
     textAlign: 'center',
     paddingHorizontal: spacing.md,
@@ -394,7 +381,6 @@ const styles = StyleSheet.create({
   modeText: {
     fontFamily: fonts.bodyHeavy,
     fontSize: 15,
-    fontWeight: '800',
     color: colors.inkSoft,
   },
   modeTextActive: {
@@ -428,7 +414,6 @@ const styles = StyleSheet.create({
   },
   textLink: {
     fontFamily: fonts.bodyHeavy,
-    fontWeight: '800',
     color: colors.ctaBorder,
     textAlign: 'center',
     textDecorationLine: 'underline',
@@ -439,7 +424,6 @@ const styles = StyleSheet.create({
   playText: {
     fontFamily: fonts.display,
     color: colors.ctaText,
-    fontWeight: '700',
     letterSpacing: 0.5,
     textAlign: 'center',
   },
@@ -448,7 +432,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
     color: colors.ctaText,
     fontSize: 14,
-    fontWeight: '700',
     opacity: 0.92,
     textAlign: 'center',
   },
@@ -460,7 +443,6 @@ const styles = StyleSheet.create({
   levelsHeading: {
     fontFamily: fonts.bodyHeavy,
     fontSize: 15,
-    fontWeight: '800',
     color: colors.ink,
   },
   unlockSlot: {
@@ -476,7 +458,6 @@ const styles = StyleSheet.create({
   unlockCaption: {
     fontFamily: fonts.bodySoft,
     fontSize: 13,
-    fontWeight: '700',
     color: colors.inkSoft,
     textAlign: 'center',
     lineHeight: 18,
@@ -498,6 +479,5 @@ const styles = StyleSheet.create({
   levelText: {
     fontFamily: fonts.bodyHeavy,
     fontSize: 14,
-    fontWeight: '800',
   },
 });

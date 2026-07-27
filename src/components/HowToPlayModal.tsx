@@ -26,7 +26,7 @@ export function HowToPlayModal({ visible, mode, onDismiss }: Props) {
   const steps = [
     t('howToPlay.step1'),
     mode === 'animals' ? t('howToPlay.step2Animals') : t('howToPlay.step2Numbers'),
-    t('howToPlay.step3'),
+    mode === 'animals' ? t('howToPlay.step3Animals') : t('howToPlay.step3Numbers'),
   ];
 
   useEffect(() => {
@@ -104,7 +104,6 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: fonts.display,
     fontSize: 32,
-    fontWeight: '700',
     color: colors.title,
     textAlign: 'center',
   },
@@ -128,13 +127,11 @@ const styles = StyleSheet.create({
   stepNumber: {
     fontFamily: fonts.displaySoft,
     fontSize: 16,
-    fontWeight: '700',
   },
   stepText: {
     flex: 1,
     fontFamily: fonts.body,
     fontSize: 16,
-    fontWeight: '700',
     color: colors.ink,
   },
   chancesBox: {
@@ -150,14 +147,12 @@ const styles = StyleSheet.create({
   chancesHearts: {
     fontFamily: fonts.bodyHeavy,
     fontSize: 16,
-    fontWeight: '800',
     color: colors.conflictText,
     letterSpacing: 2,
   },
   chancesText: {
     fontFamily: fonts.body,
     fontSize: 14,
-    fontWeight: '700',
     color: colors.hintText,
     textAlign: 'center',
   },
@@ -176,6 +171,5 @@ const styles = StyleSheet.create({
     fontFamily: fonts.displaySoft,
     color: colors.ctaText,
     fontSize: 18,
-    fontWeight: '700',
   },
 });

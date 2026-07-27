@@ -119,7 +119,6 @@ const styles = StyleSheet.create({
   sheetTitle: {
     fontFamily: fonts.display,
     fontSize: 24,
-    fontWeight: '700',
     color: colors.title,
     textAlign: 'center',
   },
@@ -145,7 +144,6 @@ const styles = StyleSheet.create({
   optionText: {
     fontFamily: fonts.bodyHeavy,
     fontSize: 16,
-    fontWeight: '800',
     color: colors.inkSoft,
   },
   optionTextActive: {
@@ -154,7 +152,6 @@ const styles = StyleSheet.create({
   check: {
     fontFamily: fonts.bodyHeavy,
     fontSize: 16,
-    fontWeight: '800',
     color: colors.hintText,
   },
 });

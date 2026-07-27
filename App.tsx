@@ -405,7 +405,11 @@ function AppContent() {
               width: '100%',
               maxWidth: '100%',
               paddingHorizontal: layout.pagePaddingX,
-              paddingTop: layout.pagePaddingY + (onGameScreen ? layout.hitSize : 0),
+              // Clear the absolute language/mute (or back/help) chrome so home
+              // content starts just below those top buttons.
+              paddingTop: onGameScreen
+                ? layout.pagePaddingY + layout.hitSize
+                : Math.max(8, layout.insets.top + 4) + layout.hitSize + 8,
               paddingBottom: layout.pagePaddingY + Math.max(layout.insets.bottom, 8),
               gap: layout.gap,
               // Home is top-anchored so mode/content height changes don't re-center.
@@ -577,7 +581,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: fonts.display,
-    fontWeight: '700',
     color: colors.title,
     textShadowColor: colors.titleShadow,
     textShadowOffset: { width: 0, height: 2 },
@@ -593,6 +596,5 @@ const styles = StyleSheet.create({
   subtitle: {
     fontFamily: fonts.bodyHeavy,
     fontSize: 14,
-    fontWeight: '800',
   },
 });

@@ -87,14 +87,12 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: fonts.display,
     fontSize: 30,
-    fontWeight: '700',
     color: colors.hintText,
     textAlign: 'center',
   },
   message: {
     fontFamily: fonts.body,
     fontSize: 16,
-    fontWeight: '700',
     color: colors.ink,
     textAlign: 'center',
     lineHeight: 22,
@@ -114,7 +112,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.displaySoft,
     color: colors.ctaText,
     fontSize: 18,
-    fontWeight: '700',
   },
   secondary: {
     paddingVertical: 8,
@@ -123,7 +120,6 @@ const styles = StyleSheet.create({
   secondaryText: {
     fontFamily: fonts.bodyHeavy,
     fontSize: 15,
-    fontWeight: '800',
     color: colors.ink,
   },
 });

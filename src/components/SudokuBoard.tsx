@@ -544,7 +544,6 @@ const styles = StyleSheet.create({
   niceText: {
     fontFamily: fonts.display,
     fontSize: 20,
-    fontWeight: '700',
     color: colors.digitCorrectFlash,
   },
   digitStack: {
@@ -556,7 +555,6 @@ const styles = StyleSheet.create({
   },
   digit: {
     fontFamily: fonts.display,
-    fontWeight: '700',
   },
   digitNormal: {
     color: colors.digit,

@@ -219,20 +219,17 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: fonts.display,
     fontSize: 36,
-    fontWeight: '700',
     color: colors.title,
   },
   message: {
     fontFamily: fonts.body,
     fontSize: 17,
-    fontWeight: '700',
     color: colors.ink,
     textAlign: 'center',
   },
   unlock: {
     fontFamily: fonts.bodyHeavy,
     fontSize: 15,
-    fontWeight: '800',
     color: colors.hintText,
     textAlign: 'center',
     marginBottom: 4,
@@ -251,7 +248,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.displaySoft,
     color: colors.ctaText,
     fontSize: 18,
-    fontWeight: '700',
   },
   secondary: {
     paddingVertical: 8,
@@ -260,13 +256,11 @@ const styles = StyleSheet.create({
   secondaryText: {
     fontFamily: fonts.bodyHeavy,
     fontSize: 15,
-    fontWeight: '800',
     color: colors.ink,
   },
   keepLooking: {
     fontFamily: fonts.bodySoft,
     fontSize: 14,
-    fontWeight: '600',
     color: colors.eraseText,
   },
 });
