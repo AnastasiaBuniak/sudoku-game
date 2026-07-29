@@ -209,11 +209,11 @@ function BoardSymbol({
   if (value === 0) return null;
 
   if (symbol === 'animal') {
-    const glyphSize = Math.round(cellSize * 0.78);
+    const glyphSize = Math.round(cellSize * 0.94);
     return <AnimalGlyph value={value} size={glyphSize} dimmed={isIncorrect} />;
   }
 
-  const fontSize = Math.max(16, Math.round(cellSize * 0.62));
+  const fontSize = Math.max(20, Math.round(cellSize * 0.88));
   return (
     <BoardDigit
       value={value}
@@ -340,10 +340,10 @@ export function SudokuBoard({
 }: Props) {
   const { t } = useI18n();
   const { size, boxRows, boxCols } = grid;
-  // Chunky lavender frame so pillow tiles sit inset (not flush with the edge).
-  const framePad = Math.max(14, Math.round(boardSize * 0.048));
-  const cellGap = Math.max(3, Math.round(boardSize * 0.012));
-  const blockGap = Math.max(8, Math.round(boardSize * 0.03));
+  // Slimmer frame + tighter gaps so pillow tiles claim more of the board.
+  const framePad = Math.max(8, Math.round(boardSize * 0.028));
+  const cellGap = Math.max(2, Math.round(boardSize * 0.007));
+  const blockGap = Math.max(5, Math.round(boardSize * 0.018));
   const inner = boardSize - framePad * 2;
 
   // Cells are square. Horizontal gaps set the cell size; vertical gaps then

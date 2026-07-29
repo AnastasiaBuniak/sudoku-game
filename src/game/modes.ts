@@ -32,10 +32,11 @@ const NUMBERS_MODE: ModeConfig = {
   mode: 'numbers',
   symbol: 'digit',
   levels: [
+    // Escalating unlocks: each step needs one more win than the last (3 → 4 → 5 → 6).
     { id: 'easy', grid: GRID_9, clues: 54, winsToUnlockNext: 3 },
-    { id: 'medium', grid: GRID_9, clues: 46, winsToUnlockNext: 3 },
+    { id: 'medium', grid: GRID_9, clues: 46, winsToUnlockNext: 4 },
     { id: 'hard', grid: GRID_9, clues: 38, winsToUnlockNext: 5 },
-    { id: 'profi', grid: GRID_9, clues: 32, winsToUnlockNext: 5 },
+    { id: 'profi', grid: GRID_9, clues: 32, winsToUnlockNext: 6 },
     { id: 'master', grid: GRID_9, clues: 28, winsToUnlockNext: 0 },
   ],
 };
@@ -48,9 +49,10 @@ const ANIMALS_MODE: ModeConfig = {
   mode: 'animals',
   symbol: 'animal',
   levels: [
+    // Same gradual ladder: 3 → 4 → 5 wins to unlock the next.
     { id: 'cubs', grid: GRID_4, clues: 10, winsToUnlockNext: 3 },
-    { id: 'meadow', grid: GRID_4, clues: 8, winsToUnlockNext: 3 },
-    { id: 'forest', grid: GRID_6, clues: 22, winsToUnlockNext: 4 },
+    { id: 'meadow', grid: GRID_4, clues: 8, winsToUnlockNext: 4 },
+    { id: 'forest', grid: GRID_6, clues: 22, winsToUnlockNext: 5 },
     { id: 'jungle', grid: GRID_6, clues: 18, winsToUnlockNext: 0 },
   ],
 };

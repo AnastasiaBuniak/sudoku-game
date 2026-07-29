@@ -42,6 +42,10 @@ export type TranslationTree = {
   win: {
     title: string;
     message: string;
+    /** Shown above the unlocked level chip when a new level opens. */
+    unlockTitle: string;
+    unlockBody: string;
+    playUnlocked: string;
     playNext: string;
     backHome: string;
     keepLooking: string;

@@ -37,7 +37,7 @@ Ready-to-upload files for **App Store Connect** and **Google Play Console**.
 
 - Category: **Games → Puzzle**
 - Age: **4+** (general audience — not Kids Category)
-- Ads: **No** (at launch)
+- Ads: **Yes** (occasional interstitial via AdMob)
 - Support email: `visadayscalculator@gmail.com`
 - Privacy policy: `https://anastasiabuniak.github.io/sudoku-game/`
 

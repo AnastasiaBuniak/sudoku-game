@@ -29,13 +29,14 @@ export function NumberPad({
   const { t } = useI18n();
   const values = Array.from({ length: count }, (_, index) => index + 1);
   const remaining = values.filter((value) => !disabledNumbers.has(value));
-  const cellGap = isCompact ? 4 : 6;
+  const cellGap = isCompact ? 2 : 4;
 
   // Keep buttons from ballooning when a mode only has a few symbols (e.g. 4×4).
   const columns = Math.max(count, 5);
   const buttonSize = Math.floor((maxWidth - cellGap * (columns - 1)) / columns);
-  const digitSize = Math.max(13, Math.round(buttonSize * 0.42 * fontScale));
-  const glyphSize = Math.round(buttonSize * 0.66);
+  const tapSize = Math.round(buttonSize * 1.04);
+  const digitSize = Math.max(13, Math.round(buttonSize * 0.4 * fontScale));
+  const glyphSize = Math.round(buttonSize * 0.62);
 
   return (
     <View style={[styles.container, { maxWidth, width: '100%', gap: Math.max(spacing.sm, gap) }]}>
@@ -47,7 +48,7 @@ export function NumberPad({
               key={value}
               onPress={() => onNumberPress(value)}
               scaleTo={0.8}
-              style={[styles.buttonWrap, { width: buttonSize, height: buttonSize }]}
+              style={[styles.buttonWrap, { width: buttonSize, height: tapSize }]}
             >
               <LinearGradient
                 colors={[gummy.gloss, gummy.bg, gummy.border]}

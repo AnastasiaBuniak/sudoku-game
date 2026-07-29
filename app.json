@@ -34,6 +34,15 @@
     "web": {
       "favicon": "./assets/icon.png"
     },
+    "plugins": [
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-7343052448319099~9796790465",
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511"
+        }
+      ]
+    ],
     "extra": {
       "eas": {
         "projectId": "5835564f-e1b6-49bf-ac79-07151550d52a"

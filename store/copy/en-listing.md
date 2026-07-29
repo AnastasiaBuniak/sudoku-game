@@ -24,17 +24,17 @@ Soft puzzles for kids
 **Google Play short description** (max 80 characters):
 
 ```
-Cute candy Sudoku for kids—numbers & animals, gentle levels, no ads.
+Cute candy Sudoku for kids—numbers & animals, occasional ads.
 ```
 
-Character count: 64 / 80
+Character count: 61 / 80
 
 ---
 
 ## Promotional text (Apple only, up to 170 characters — can update anytime)
 
 ```
-Soft, candy-bright Sudoku made for little puzzlers. Start with cute animals on small grids, grow into classic numbers, and unlock new levels as you play—calm, colorful, and ad-free.
+Candy-bright Sudoku for little puzzlers. Start with cute animals, grow into classic numbers, unlock levels as you play—calm, colorful fun with occasional ads.
 ```
 
 ---
@@ -57,7 +57,7 @@ MADE FOR LITTLE HANDS & BIG BRAINS
 
 CALM & KID-FRIENDLY
 • No accounts required
-• No ads at launch
+• Occasional full-screen ads at natural breaks in play
 • Progress saved on your device
 • Designed for ages 4+ as a general Puzzle app for the whole family
 
@@ -98,6 +98,6 @@ Welcome to Gummy Sudoku! Soft candy Sudoku with Animals and Numbers modes, gentl
 | Primary category | Games → Puzzle |
 | Secondary (Apple, optional) | Games → Family / Education |
 | Content rating | 4+ (Apple) / Everyone (Google, typically) |
-| Ads | No (at launch) |
+| Ads | Yes — occasional interstitial (AdMob) |
 | In-app purchases | No |
-| Data collection | Anonymous product analytics (PostHog); see privacy policy |
+| Data collection | Anonymous product analytics (PostHog) + advertising (AdMob); see privacy policy |

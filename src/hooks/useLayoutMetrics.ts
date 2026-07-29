@@ -4,10 +4,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const BASE_WIDTH = 390;
 const BASE_HEIGHT = 844;
-/** Board / number tableau as a fraction of screen width (target mid 80–88%). */
-const BOARD_WIDTH_RATIO = 0.86;
-const BOARD_WIDTH_MIN_RATIO = 0.82;
-const BOARD_WIDTH_MAX_RATIO = 0.88;
+/** Board / number tableau as a fraction of screen width. */
+const BOARD_WIDTH_RATIO = 0.98;
+const BOARD_WIDTH_MIN_RATIO = 0.96;
+const BOARD_WIDTH_MAX_RATIO = 0.98;
 
 export type LayoutMetrics = {
   width: number;
@@ -22,7 +22,7 @@ export type LayoutMetrics = {
   pagePaddingY: number;
   gap: number;
   hitSize: number;
-  /** Sudoku board edge length (~80–85% of screen width, height-clamped). */
+  /** Sudoku board edge length (~98% of screen width, height-clamped). */
   boardSize: number;
   padMaxWidth: number;
   heroSize: number;
@@ -55,8 +55,10 @@ export function useLayoutMetrics(): LayoutMetrics {
     );
     const fontScale = clamp(scale, 0.85, isTablet ? 1.3 : 1.12);
 
-    // Keep side padding light so an 80–85% board can sit without clipping.
-    const pagePaddingX = isTablet ? 24 : isCompact ? 8 : 12;
+    // Keep side padding to ~1% each side so a 98% board fits without clipping.
+    const pagePaddingX = isTablet
+      ? 24
+      : Math.max(4, Math.round(width * ((1 - BOARD_WIDTH_RATIO) / 2)));
     const pagePaddingY = isCompact || isLandscape ? 8 : isTablet ? 20 : 14;
     const gap = isCompact || isLandscape ? 8 : isTablet ? 18 : 14;
 
@@ -72,7 +74,7 @@ export function useLayoutMetrics(): LayoutMetrics {
     const usableWidth = Math.max(240, width - insets.left - insets.right);
     const contentWidth = Math.max(200, usableWidth - pagePaddingX * 2);
 
-    // Target ~83% of screen width (kept in the 80–85% band when possible).
+    // Target ~98% of screen width.
     const idealBoard = Math.round(width * BOARD_WIDTH_RATIO);
     const minBoardByWidth = Math.round(width * BOARD_WIDTH_MIN_RATIO);
     const maxBoardByWidth = Math.round(width * BOARD_WIDTH_MAX_RATIO);
@@ -108,7 +110,7 @@ export function useLayoutMetrics(): LayoutMetrics {
 
     // Absolute floors/ceilings for tiny or huge devices.
     boardSize = Math.floor(
-      clamp(boardSize, isCompact ? 200 : 220, Math.min(contentWidth, usableWidth * 0.92)),
+      clamp(boardSize, isCompact ? 200 : 220, Math.min(contentWidth, usableWidth * BOARD_WIDTH_MAX_RATIO)),
     );
 
     const contentMaxWidth = contentWidth;

@@ -1,6 +1,9 @@
 import type { GameMode } from '../game/modes';
 import type { LocaleCode } from '../i18n/types';
 
+export type AdPlacement = 'digit_complete';
+export type AdFormat = 'interstitial';
+
 /** Anonymous product events only — no user IDs or device advertising IDs. */
 export type AnalyticsEvent =
   | { name: 'app_open'; props: { locale: LocaleCode } }
@@ -29,6 +32,26 @@ export type AnalyticsEvent =
   | {
       name: 'number_completed';
       props: { mode: GameMode; digit: number; level: string; locale: LocaleCode };
+    }
+  | {
+      name: 'ad_show_requested';
+      props: { placement: AdPlacement; format: AdFormat; ready: boolean };
+    }
+  | {
+      name: 'ad_opened';
+      props: { placement: AdPlacement; format: AdFormat };
+    }
+  | {
+      name: 'ad_closed';
+      props: { placement: AdPlacement; format: AdFormat };
+    }
+  | {
+      name: 'ad_clicked';
+      props: { placement: AdPlacement; format: AdFormat };
+    }
+  | {
+      name: 'ad_failed';
+      props: { placement: AdPlacement; format: AdFormat; phase: 'load' | 'show' };
     };
 
 export type AnalyticsBackend = {

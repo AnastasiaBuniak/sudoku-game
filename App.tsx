@@ -33,6 +33,7 @@ import { useHowToPlay } from './src/hooks/useHowToPlay';
 import { useLayoutMetrics } from './src/hooks/useLayoutMetrics';
 import { useLevelProgress } from './src/hooks/useLevelProgress';
 import { usePersistedSession } from './src/hooks/usePersistedSession';
+import { initAds, maybeShowInterstitialOnDigitComplete } from './src/ads';
 import { track } from './src/analytics';
 import { AnalyticsProvider } from './src/analytics/AnalyticsProvider';
 import { I18nProvider, useI18n } from './src/i18n/I18nProvider';
@@ -132,7 +133,7 @@ function AppContent() {
   const canContinueMode = canContinue && game?.mode === mode;
 
   const [selected, setSelected] = useState<{ row: number; col: number } | null>(null);
-  const [unlockMessage, setUnlockMessage] = useState<string | null>(null);
+  const [unlockedLevelId, setUnlockedLevelId] = useState<string | null>(null);
   const [winDismissed, setWinDismissed] = useState(false);
   const [cheer, setCheer] = useState<CheerEvent | null>(null);
   const cheerIdRef = useRef(0);
@@ -150,6 +151,7 @@ function AppContent() {
     if (!ready || appOpenTrackedRef.current) return;
     appOpenTrackedRef.current = true;
     track({ name: 'app_open', props: { locale } });
+    void initAds();
   }, [ready, locale]);
 
   useEffect(() => {
@@ -193,20 +195,21 @@ function AppContent() {
   const startFreshGame = useCallback(
     (nextMode: GameMode, levelId: string) => {
       setSelected(null);
-      setUnlockMessage(null);
+      setUnlockedLevelId(null);
       setWinDismissed(false);
       setCheer(null);
       winHandledRef.current = false;
       lossTrackedRef.current = false;
+      setSelectedLevel(nextMode, levelId);
       track({ name: 'puzzle_started', props: { mode: nextMode, level: levelId, locale } });
       setGame(createNewGame(nextMode, levelId), 'game');
     },
-    [locale, setGame],
+    [locale, setGame, setSelectedLevel],
   );
 
   const goHome = useCallback(() => {
     setSelected(null);
-    setUnlockMessage(null);
+    setUnlockedLevelId(null);
     setWinDismissed(false);
     setCheer(null);
     winHandledRef.current = false;
@@ -257,14 +260,11 @@ function AppContent() {
         name: 'level_unlocked',
         props: { mode: game.mode, level: result.unlockedLevel, locale },
       });
+      setSelectedLevel(game.mode, result.unlockedLevel);
     }
-    setUnlockMessage(
-      result.unlockedLevel
-        ? t('game.levelUnlocked', { level: t(`levels.${result.unlockedLevel}`) })
-        : null,
-    );
+    setUnlockedLevelId(result.unlockedLevel);
     updateGame({ winCounted: true });
-  }, [game, completeGame, updateGame, t, locale]);
+  }, [game, completeGame, updateGame, locale, setSelectedLevel]);
 
   useEffect(() => {
     if (!game || !game.won) {
@@ -320,11 +320,17 @@ function AppContent() {
         boxComplete,
       });
 
-      if (didCompleteDigit(game.board, nextBoard, game.solution, value)) {
+      const digitCompleted = didCompleteDigit(game.board, nextBoard, game.solution, value);
+      const wonNow = isBoardComplete(nextBoard, game.solution);
+      if (digitCompleted) {
         track({
           name: 'number_completed',
           props: { mode: game.mode, digit: value, level: game.levelId, locale },
         });
+        // Skip interstitial on the winning move so WinModal isn't buried under an ad.
+        if (!wonNow) {
+          maybeShowInterstitialOnDigitComplete();
+        }
       }
     }
 
@@ -514,10 +520,13 @@ function AppContent() {
 
       <WinModal
         visible={Boolean(game?.won && screen === 'game' && !winDismissed)}
-        unlockMessage={unlockMessage}
+        unlockedLevelId={unlockedLevelId}
+        unlockedLevelIndex={
+          unlockedLevelId && game ? getLevelIndex(game.mode, unlockedLevelId) : 0
+        }
         onPlayAgain={() => {
           if (!game) return;
-          startFreshGame(game.mode, game.levelId);
+          startFreshGame(game.mode, unlockedLevelId ?? game.levelId);
         }}
         onHome={goHome}
         onClose={() => setWinDismissed(true)}
