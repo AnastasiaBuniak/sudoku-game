@@ -87,8 +87,9 @@ Welcome to Gummy Sudoku! Soft candy Sudoku with Animals and Numbers modes, gentl
 
 ## Support & privacy contacts
 
-- Support / privacy email: `anastasiia.melnychek@gmail.com`
-- Privacy policy URL: `https://anastasiabuniak.github.io/sudoku-game/`
+- Support / privacy email: `hello.gummy.sudoku@gmail.com`
+- Website: `https://anastasiabuniak.github.io/sudoku-game/`
+- Privacy policy URL: `https://anastasiabuniak.github.io/sudoku-game/privacy.html`
 
 ---
 

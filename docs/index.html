@@ -3,239 +3,337 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Gummy Sudoku — Privacy Policy</title>
+    <title>Gummy Sudoku — Soft puzzles for kids</title>
     <meta
       name="description"
-      content="Privacy Policy for Gummy Sudoku, a soft sudoku puzzle game for kids and families."
+      content="Gummy Sudoku is a candy-bright Sudoku game for kids and families—Animals & Numbers modes, gentle levels, and calm play."
+    />
+    <meta property="og:title" content="Gummy Sudoku" />
+    <meta
+      property="og:description"
+      content="Soft candy Sudoku for kids and families. Animals & Numbers modes, gentle levels, occasional ads."
+    />
+    <meta property="og:image" content="./hero.png" />
+    <link rel="icon" href="./icon.png" type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap"
+      rel="stylesheet"
     />
     <style>
       :root {
-        color-scheme: light;
         --ink: #3b2a4a;
         --muted: #6b5a7a;
-        --card: #fffaf3;
+        --cream: #fffaf3;
+        --pink: #f7c8ec;
+        --lavender: #c9a8e8;
         --accent: #e85aa8;
-        --border: #c9a8e8;
+        --purple: #7b5cff;
+        --teal: #2a8a78;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
       }
       body {
         margin: 0;
-        font-family: Georgia, "Times New Roman", serif;
-        background: linear-gradient(180deg, #e8d4f8, #f8d0e8 45%, #d8ecff);
         color: var(--ink);
-        line-height: 1.55;
-      }
-      main {
-        max-width: 720px;
-        margin: 0 auto;
-        padding: 48px 20px 72px;
-      }
-      .card {
-        background: var(--card);
-        border: 3px solid var(--border);
-        border-radius: 24px;
-        padding: 28px 24px;
-        box-shadow: 0 10px 0 rgba(140, 100, 180, 0.18);
-      }
-      h1 {
-        margin: 0 0 8px;
-        font-size: 2rem;
-        color: var(--accent);
-      }
-      .meta {
-        color: var(--muted);
-        margin-bottom: 24px;
-        font-size: 0.95rem;
-      }
-      h2 {
-        margin-top: 1.6em;
-        font-size: 1.25rem;
-      }
-      ul {
-        padding-left: 1.2em;
+        font-family: Nunito, sans-serif;
+        background: #f3e9ff;
       }
       a {
-        color: #2a8a78;
+        color: inherit;
+      }
+
+      /* Full-bleed hero */
+      .hero {
+        position: relative;
+        min-height: 100svh;
+        display: grid;
+        align-items: end;
+        overflow: hidden;
+        color: #fff;
+        isolation: isolate;
+      }
+      .hero-bg {
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(180deg, rgba(59, 42, 74, 0.08) 0%, rgba(59, 42, 74, 0.35) 42%, rgba(59, 42, 74, 0.88) 100%),
+          url("./hero.png") center / cover no-repeat;
+        transform: scale(1.02);
+        animation: drift 18s ease-in-out infinite alternate;
+        z-index: -1;
+      }
+      @keyframes drift {
+        from {
+          transform: scale(1.02) translate3d(0, 0, 0);
+        }
+        to {
+          transform: scale(1.06) translate3d(0, -1.5%, 0);
+        }
+      }
+      .hero-inner {
+        width: min(920px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 72px 0 64px;
+        position: relative;
+        z-index: 1;
+      }
+      .brand-row {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 18px;
+        animation: rise 0.8s ease both;
+      }
+      .brand-row img {
+        width: 64px;
+        height: 64px;
+        border-radius: 18px;
+        box-shadow: 0 8px 0 rgba(0, 0, 0, 0.12);
+      }
+      .brand-name {
+        font-family: Fredoka, sans-serif;
+        font-weight: 700;
+        font-size: clamp(2.4rem, 8vw, 4.2rem);
+        letter-spacing: 0.02em;
+        line-height: 1;
+        text-shadow: 0 4px 0 rgba(0, 0, 0, 0.12);
+      }
+      .hero h1 {
+        margin: 0 0 12px;
+        max-width: 14ch;
+        font-family: Fredoka, sans-serif;
+        font-weight: 600;
+        font-size: clamp(1.35rem, 3.6vw, 2rem);
+        line-height: 1.2;
+        animation: rise 0.9s ease 0.08s both;
+      }
+      .hero p {
+        margin: 0 0 28px;
+        max-width: 34ch;
+        font-size: 1.08rem;
+        line-height: 1.45;
+        color: rgba(255, 255, 255, 0.92);
+        animation: rise 1s ease 0.16s both;
+      }
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        animation: rise 1.05s ease 0.24s both;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 0 22px;
+        border-radius: 999px;
+        font-family: Fredoka, sans-serif;
+        font-weight: 600;
+        font-size: 1.05rem;
+        text-decoration: none;
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+      .btn-primary {
+        background: var(--cream);
+        color: var(--purple);
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12);
+      }
+      .btn-ghost {
+        background: rgba(255, 255, 255, 0.16);
+        color: #fff;
+        border: 2px solid rgba(255, 255, 255, 0.55);
+        backdrop-filter: blur(6px);
+      }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      section {
+        padding: 72px 20px;
+      }
+      .wrap {
+        width: min(920px, 100%);
+        margin: 0 auto;
+      }
+      .section-title {
+        margin: 0 0 10px;
+        font-family: Fredoka, sans-serif;
+        font-size: clamp(1.8rem, 4vw, 2.4rem);
+      }
+      .section-lead {
+        margin: 0 0 28px;
+        max-width: 42ch;
+        color: var(--muted);
+        font-size: 1.08rem;
+      }
+
+      .play {
+        background:
+          radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.7), transparent 30%),
+          radial-gradient(circle at 90% 10%, rgba(247, 200, 236, 0.8), transparent 28%),
+          linear-gradient(180deg, #f3e9ff, #ffe8f5 50%, #e7f4ff);
+      }
+      .modes {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+      @media (max-width: 720px) {
+        .modes {
+          grid-template-columns: 1fr;
+        }
+      }
+      .mode {
+        position: relative;
+        overflow: hidden;
+        border-radius: 28px;
+        min-height: 320px;
+        border: 3px solid rgba(201, 168, 232, 0.7);
+        box-shadow: 0 12px 0 rgba(140, 100, 180, 0.12);
+        background: #ddd;
+      }
+      .mode img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top center;
+        transform: scale(1.02);
+        transition: transform 0.45s ease;
+      }
+      .mode:hover img {
+        transform: scale(1.06);
+      }
+      .mode-copy {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 22px 18px;
+        background: linear-gradient(180deg, transparent, rgba(59, 42, 74, 0.88));
+        color: #fff;
+      }
+      .mode-copy h3 {
+        margin: 0 0 6px;
+        font-family: Fredoka, sans-serif;
+        font-size: 1.45rem;
+      }
+      .mode-copy p {
+        margin: 0;
+        font-size: 0.98rem;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .contact {
+        background: linear-gradient(180deg, #e7f4ff, #f8e7ff);
+      }
+      .contact-box {
+        display: grid;
+        gap: 10px;
+        padding: 28px 24px;
+        border-radius: 28px;
+        background: rgba(255, 250, 243, 0.88);
+        border: 3px solid var(--lavender);
+        box-shadow: 0 10px 0 rgba(140, 100, 180, 0.12);
+      }
+      .contact-box a {
+        color: var(--teal);
+        font-weight: 700;
+        word-break: break-word;
+      }
+
+      footer {
+        padding: 28px 20px 40px;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.95rem;
+        background: #f8e7ff;
+      }
+      footer a {
+        color: var(--teal);
+        font-weight: 700;
+        text-decoration: none;
       }
     </style>
   </head>
   <body>
-    <main>
-      <article class="card">
-        <h1>Privacy Policy</h1>
-        <p class="meta">Gummy Sudoku · Last updated: August 1, 2026</p>
+    <header class="hero">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="hero-inner">
+        <div class="brand-row">
+          <img src="./icon.png" alt="" width="64" height="64" />
+          <div class="brand-name">Gummy Sudoku</div>
+        </div>
+        <h1>Soft puzzles for kids</h1>
+        <p>Candy-bright Sudoku with Animals &amp; Numbers modes—gentle levels for little puzzlers and families.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#play">See how it plays</a>
+          <a class="btn btn-ghost" href="./privacy.html">Privacy Policy</a>
+        </div>
+      </div>
+    </header>
 
-        <p>
-          Gummy Sudoku (“the App”, “we”, “us”) is a soft sudoku puzzle game made for
-          kids and families. It is published as a <strong>general audience</strong>
-          puzzle game with an expected age rating of <strong>4+</strong> (not in
-          Apple’s Kids Category). This Privacy Policy explains what information we
-          collect, how we use it, and your choices.
+    <section class="play" id="play">
+      <div class="wrap">
+        <h2 class="section-title">Two sweet ways to play</h2>
+        <p class="section-lead">
+          Start with cute animal boards, then grow into classic number Sudoku as skills unlock.
         </p>
+        <div class="modes">
+          <article class="mode">
+            <img src="./shot-animals.png" alt="Gummy Sudoku Animals mode on a 4 by 4 board" />
+            <div class="mode-copy">
+              <h3>Animals</h3>
+              <p>Tiny 4×4 boards with gummy animal friends—perfect for younger kids.</p>
+            </div>
+          </article>
+          <article class="mode">
+            <img src="./shot-numbers.png" alt="Gummy Sudoku Numbers mode on a classic 9 by 9 board" />
+            <div class="mode-copy">
+              <h3>Numbers</h3>
+              <p>Classic 9×9 Sudoku from Easy through Master, with three gentle chances.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
 
-        <h2>1. Summary</h2>
-        <ul>
-          <li>No accounts, names, emails, or passwords</li>
-          <li>Anonymous product analytics (to improve the game)</li>
-          <li>Game progress is saved on your device</li>
-          <li>Occasional full-screen ads via Google AdMob</li>
-          <li>We do not sell personal information</li>
-        </ul>
+    <section class="contact" id="contact">
+      <div class="wrap">
+        <h2 class="section-title">Support</h2>
+        <p class="section-lead">Questions about the game or privacy? We’re here to help.</p>
+        <div class="contact-box">
+          <div><strong>Email</strong></div>
+          <a href="mailto:hello.gummy.sudoku@gmail.com">hello.gummy.sudoku@gmail.com</a>
+          <div style="margin-top: 8px"><strong>Privacy</strong></div>
+          <a href="./privacy.html">Read the Privacy Policy</a>
+        </div>
+      </div>
+    </section>
 
-        <h2>2. Information we collect</h2>
-        <h3>2.1 Information we do not collect</h3>
-        <p>We do not ask for or intentionally collect:</p>
-        <ul>
-          <li>Name, email, phone number, or postal address</li>
-          <li>Photos, contacts, or precise location</li>
-          <li>Account credentials (the App has no login)</li>
-        </ul>
-
-        <h3>2.2 Anonymous product analytics</h3>
-        <p>
-          To understand how the App is used and improve it, we collect
-          <strong>anonymous event data</strong>, for example:
-        </p>
-        <ul>
-          <li>App opened</li>
-          <li>Language selected (English, Chinese, Hindi, Spanish, Arabic, Japanese, German, French, etc.)</li>
-          <li>Game mode and difficulty level selected, started, continued, unlocked, won, or lost</li>
-          <li>Whether a move was correct or incorrect (and chances left after a wrong move)</li>
-          <li>Anonymous ad funnel events (requested, opened, closed, clicked, failed) — without advertising IDs</li>
-        </ul>
-        <p>
-          These events are sent to <strong>PostHog</strong>. We configure PostHog for
-          product analytics without identified user profiles (no “who is this person”
-          profiles). Events may include technical context PostHog or the device OS
-          attach automatically (such as app version or general device type), which we
-          use only to understand product usage—not to sell personal data.
-        </p>
-
-        <h3>2.3 Advertising (Google AdMob)</h3>
-        <p>
-          The App shows <strong>occasional full-screen (interstitial) ads</strong>
-          through <strong>Google AdMob</strong> at natural breaks after a win or
-          game over (for example when the player continues, starts the next puzzle,
-          or leaves the end screen). Ads are not shown on top of the win celebration.
-        </p>
-        <p>
-          Google and its partners may collect or receive information used to serve and
-          measure ads, which can include:
-        </p>
-        <ul>
-          <li>Device and app information (such as device type, OS version, app version)</li>
-          <li>IP address and general (non-precise) location derived from it</li>
-          <li>Advertising identifiers (such as Android Advertising ID), where available and permitted</li>
-          <li>Ad interaction data (for example, whether an ad was shown or closed)</li>
-        </ul>
-        <p>
-          We configure ads with a family-appropriate maximum content rating. How Google
-          uses data is described in
-          <a href="https://policies.google.com/privacy" rel="noopener noreferrer"
-            >Google’s Privacy Policy</a
-          >
-          and
-          <a
-            href="https://support.google.com/admob/answer/6128543"
-            rel="noopener noreferrer"
-            >AdMob help</a
-          >.
-        </p>
-
-        <h3>2.4 Data stored on your device</h3>
-        <p>The App stores locally on your device:</p>
-        <ul>
-          <li>Unfinished puzzle progress (so you can Continue later)</li>
-          <li>Level unlock progress and win counts</li>
-          <li>Language preference</li>
-          <li>A short-lived flag used only to show a pending end-of-game ad at the right moment</li>
-        </ul>
-        <p>
-          This local data stays on the device unless you clear the App’s storage or
-          uninstall the App. It is not uploaded as a personal profile.
-        </p>
-
-        <h2>3. How we use information</h2>
-        <ul>
-          <li>Improve difficulty, onboarding, and language coverage</li>
-          <li>See which levels and features are popular</li>
-          <li>Understand mistakes vs. successful plays to balance the game</li>
-          <li>Show occasional ads to support the App</li>
-          <li>Fix bugs and monitor overall health of the App</li>
-        </ul>
-        <p>We do <strong>not</strong> sell personal information.</p>
-
-        <h2>4. Advertising practices</h2>
-        <ul>
-          <li>Ads are full-screen interstitials at natural break points (not permanent banners)</li>
-          <li>Ads appear after a win or game over, not during active puzzle play</li>
-          <li>The win celebration is shown first; ads are not overlaid on that moment</li>
-          <li>Content rating is configured for a 4+ / family audience</li>
-        </ul>
-        <p>
-          On Android, you can often limit ad personalization in device settings
-          (Google → Ads). Uninstalling the App stops further ad requests from this App.
-        </p>
-
-        <h2>5. Children’s privacy</h2>
-        <p>
-          The App is designed to be soft and approachable for children and families,
-          but it is distributed in the <strong>general</strong> store category (not
-          the Kids Category). We do not knowingly collect personal information from
-          children for our own profiles. Analytics are anonymous product events. Ads
-          are provided by Google AdMob under Google’s policies. If you believe we have
-          received personal information from a child that we control, contact us and we
-          will delete it where applicable.
-        </p>
-
-        <h2>6. Third parties</h2>
-        <ul>
-          <li>
-            <strong>PostHog</strong> — anonymous product analytics.
-            <a href="https://posthog.com/privacy" rel="noopener noreferrer">PostHog Privacy Policy</a>
-          </li>
-          <li>
-            <strong>Google AdMob / Google Mobile Ads</strong> — advertising.
-            <a href="https://policies.google.com/privacy" rel="noopener noreferrer">Google Privacy Policy</a>
-          </li>
-          <li>
-            <strong>Apple App Store / Google Play</strong> — when you download or use
-            the App through them, they may collect data under their own policies.
-          </li>
-          <li>
-            <strong>Expo / EAS (build infrastructure)</strong> — used to build and
-            distribute the App; not used to profile end users inside gameplay.
-          </li>
-        </ul>
-
-        <h2>7. International processing</h2>
-        <p>
-          Analytics and advertising data may be processed on servers in regions used by
-          PostHog and Google (for example US or EU). By using the App, you understand
-          that anonymous analytics and ad-related data may be processed in those
-          regions.
-        </p>
-
-        <h2>8. Your choices</h2>
-        <ul>
-          <li>Uninstall the App to stop new analytics and ad requests from this device</li>
-          <li>Clear App storage (or uninstall) to remove local progress and settings</li>
-          <li>Change language anytime in the App (globe icon)</li>
-          <li>Adjust device ad / privacy settings where your OS provides them</li>
-        </ul>
-
-        <h2>9. Changes to this policy</h2>
-        <p>
-          We may update this policy when the App changes. The “Last updated” date at
-          the top will change when we do. Continued use of the App after an update
-          means you accept the revised policy.
-        </p>
-
-        <h2>10. Contact</h2>
-        <p>
-          Privacy questions:
-          <a href="mailto:anastasiia.melnychek@gmail.com">anastasiia.melnychek@gmail.com</a>
-        </p>
-      </article>
-    </main>
+    <footer>
+      <div>© Gummy Sudoku · Soft puzzles for kids</div>
+      <div style="margin-top: 8px">
+        <a href="./privacy.html">Privacy Policy</a>
+      </div>
+    </footer>
   </body>
 </html>

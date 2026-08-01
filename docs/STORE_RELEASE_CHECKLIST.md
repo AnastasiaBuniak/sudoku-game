@@ -16,9 +16,10 @@ Target: **general Puzzle**, age **4+**, no Kids Category. **Contains ads** (AdMo
 3. Source: **Deploy from a branch**
 4. Branch: `main` / folder: **/docs** → Save
 5. After a minute, open:
-   `https://anastasiabuniak.github.io/sudoku-game/`
-6. Use that URL in App Store Connect + Play Console
-7. Contact email: `anastasiia.melnychek@gmail.com` (also use in store listing support/privacy contacts)
+   - Website: `https://anastasiabuniak.github.io/sudoku-game/`
+   - Privacy: `https://anastasiabuniak.github.io/sudoku-game/privacy.html`
+6. Use the privacy URL in App Store Connect + Play Console; website URL for store contact
+7. Contact email: `hello.gummy.sudoku@gmail.com` (also use in store listing support/privacy contacts)
 
 ## Your actions (required)
 1. **PostHog** — confirm `.env` has API key; events visible in Live feed

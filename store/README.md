@@ -38,8 +38,9 @@ Ready-to-upload files for **App Store Connect** and **Google Play Console**.
 - Category: **Games → Puzzle**
 - Age: **4+** (general audience — not Kids Category)
 - Ads: **Yes** (occasional interstitial after win/loss via AdMob)
-- Support email: `anastasiia.melnychek@gmail.com`
-- Privacy policy: `https://anastasiabuniak.github.io/sudoku-game/` (source: `docs/index.html`)
+- Support email: `hello.gummy.sudoku@gmail.com`
+- Website: `https://anastasiabuniak.github.io/sudoku-game/` (source: `docs/index.html`)
+- Privacy policy: `https://anastasiabuniak.github.io/sudoku-game/privacy.html` (source: `docs/privacy.html`)
 
 ## Regenerate screenshots
 
