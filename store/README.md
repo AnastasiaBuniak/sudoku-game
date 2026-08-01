@@ -39,8 +39,8 @@ Ready-to-upload files for **App Store Connect** and **Google Play Console**.
 - Age: **4+** (general audience — not Kids Category)
 - Ads: **Yes** (occasional interstitial after win/loss via AdMob)
 - Support email: `hello.gummy.sudoku@gmail.com`
-- Website: `https://anastasiabuniak.github.io/sudoku-game/` (source: `docs/index.html`)
-- Privacy policy: `https://anastasiabuniak.github.io/sudoku-game/privacy.html` (source: `docs/privacy.html`)
+- Website: `https://gummy-sudoku.netlify.app/` (source: `docs/index.html`)
+- Privacy policy: `https://gummy-sudoku.netlify.app/privacy.html` (source: `docs/privacy.html`)
 
 ## Regenerate screenshots
 

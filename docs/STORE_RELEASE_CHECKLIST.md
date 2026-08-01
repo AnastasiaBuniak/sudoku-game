@@ -8,23 +8,20 @@ Target: **general Puzzle**, age **4+**, no Kids Category. **Contains ads** (AdMo
 - [x] AdMob interstitial (every 2nd completed number/animal; skip on win)
 - [x] `eas.json` (development / preview / production)
 - [x] iOS `buildNumber` + Android `versionCode` in `app.json`
-- [x] Privacy policy: `docs/index.html` (host via GitHub Pages) — includes AdMob
+- [x] Privacy policy: `docs/privacy.html` (hosted on Netlify) — includes AdMob
 
-## Host privacy policy (GitHub Pages — free)
-1. Push `docs/` to GitHub (`main`)
-2. Repo → **Settings** → **Pages**
-3. Source: **Deploy from a branch**
-4. Branch: `main` / folder: **/docs** → Save
-5. After a minute, open:
-   - Website: `https://anastasiabuniak.github.io/sudoku-game/`
-   - Privacy: `https://anastasiabuniak.github.io/sudoku-game/privacy.html`
-6. Use the privacy URL in App Store Connect + Play Console; website URL for store contact
-7. Contact email: `hello.gummy.sudoku@gmail.com` (also use in store listing support/privacy contacts)
+## Host website + privacy (Netlify)
+1. Site is deployed from `docs/` via `netlify.toml`
+2. Live URLs:
+   - Website: `https://gummy-sudoku.netlify.app/`
+   - Privacy: `https://gummy-sudoku.netlify.app/privacy.html`
+3. Use the privacy URL in App Store Connect + Play Console; website URL for store contact
+4. Contact email: `hello.gummy.sudoku@gmail.com` (also use in store listing support/privacy contacts)
 
 ## Your actions (required)
 1. **PostHog** — confirm `.env` has API key; events visible in Live feed
 2. **Expo account** — done if project is linked in `app.json`
-3. **Host privacy policy** — GitHub Pages (confirm live URL reflects AdMob section)
+3. **Host privacy policy** — Netlify (`https://gummy-sudoku.netlify.app/privacy.html`)
 4. **Apple Developer** + **Google Play Console** accounts
 5. Create store listings from prepared assets in [`store/`](../store/README.md)
    - Icon: `store/icon/app-icon-1024-opaque.png` (Apple) / `app-icon-1024.png` (Play)

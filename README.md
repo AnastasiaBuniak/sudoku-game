@@ -118,7 +118,8 @@ sudoku-game/
 ## Store & privacy
 
 - Listing copy and screenshot capture scripts: [`store/`](./store/)
-- Privacy policy / support page: [anastasiabuniak.github.io/sudoku-game](https://anastasiabuniak.github.io/sudoku-game/)
+- Website / support: [gummy-sudoku.netlify.app](https://gummy-sudoku.netlify.app/)
+- Privacy policy: [gummy-sudoku.netlify.app/privacy.html](https://gummy-sudoku.netlify.app/privacy.html)
 - Release checklist: [`docs/STORE_RELEASE_CHECKLIST.md`](./docs/STORE_RELEASE_CHECKLIST.md)
 
 ## Troubleshooting
