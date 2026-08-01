@@ -33,7 +33,12 @@ import { useHowToPlay } from './src/hooks/useHowToPlay';
 import { useLayoutMetrics } from './src/hooks/useLayoutMetrics';
 import { useLevelProgress } from './src/hooks/useLevelProgress';
 import { usePersistedSession } from './src/hooks/usePersistedSession';
-import { initAds, maybeShowInterstitialOnDigitComplete } from './src/ads';
+import {
+  enqueueGameEndInterstitial,
+  initAds,
+  maybeShowQueuedGameEndInterstitial,
+  showGameEndInterstitial,
+} from './src/ads';
 import { track } from './src/analytics';
 import { AnalyticsProvider } from './src/analytics/AnalyticsProvider';
 import { I18nProvider, useI18n } from './src/i18n/I18nProvider';
@@ -43,7 +48,6 @@ import { isLevelUnlocked } from './src/utils/levels';
 import { MAX_MISTAKES, type PersistedGame } from './src/utils/storage';
 import {
   cloneBoard,
-  didCompleteDigit,
   generatePuzzle,
   getIncorrectCells,
   isBoardComplete,
@@ -136,10 +140,19 @@ function AppContent() {
   const [unlockedLevelId, setUnlockedLevelId] = useState<string | null>(null);
   const [winDismissed, setWinDismissed] = useState(false);
   const [cheer, setCheer] = useState<CheerEvent | null>(null);
+  const [undoCount, setUndoCount] = useState(0);
   const cheerIdRef = useRef(0);
   const winHandledRef = useRef(false);
   const lossTrackedRef = useRef(false);
   const appOpenTrackedRef = useRef(false);
+  const undoStackRef = useRef<
+    { row: number; col: number; previousValue: number; previousMistakesLeft: number }[]
+  >([]);
+
+  const clearUndoStack = useCallback(() => {
+    undoStackRef.current = [];
+    setUndoCount(0);
+  }, []);
 
   useEffect(() => {
     if (ready) {
@@ -194,31 +207,39 @@ function AppContent() {
 
   const startFreshGame = useCallback(
     (nextMode: GameMode, levelId: string) => {
+      maybeShowQueuedGameEndInterstitial();
       setSelected(null);
       setUnlockedLevelId(null);
       setWinDismissed(false);
       setCheer(null);
+      clearUndoStack();
       winHandledRef.current = false;
       lossTrackedRef.current = false;
       setSelectedLevel(nextMode, levelId);
       track({ name: 'puzzle_started', props: { mode: nextMode, level: levelId, locale } });
       setGame(createNewGame(nextMode, levelId), 'game');
     },
-    [locale, setGame, setSelectedLevel],
+    [clearUndoStack, locale, setGame, setSelectedLevel],
   );
 
   const goHome = useCallback(() => {
+    if (game?.won) {
+      enqueueGameEndInterstitial('win');
+    } else if (game?.lost) {
+      enqueueGameEndInterstitial('loss');
+    }
     setSelected(null);
     setUnlockedLevelId(null);
     setWinDismissed(false);
     setCheer(null);
+    clearUndoStack();
     winHandledRef.current = false;
     if (game?.won || game?.lost) {
       clearGame('home');
       return;
     }
     setScreen('home');
-  }, [clearGame, game?.lost, game?.won, setScreen]);
+  }, [clearGame, clearUndoStack, game?.lost, game?.won, setScreen]);
 
   const handleContinue = useCallback(() => {
     if (!canContinue || !game) return;
@@ -276,19 +297,24 @@ function AppContent() {
     if (!game || isGivenCell(game.given, row, col) || game.won || game.lost) return;
 
     const previous = game.board[row][col];
-    if (previous === value) return;
+    // Occupied cells can't be overwritten — wrong guesses must be erased first.
+    if (previous !== 0) return;
 
     const nextBoard: Board = cloneBoard(game.board);
     nextBoard[row][col] = value;
 
     let mistakesLeft = game.mistakesLeft;
     let lost = false;
+    let nextGiven = game.given;
 
-    if (value === 0) {
-      if (previous !== 0) {
-        void playErase();
-      }
-    } else if (value !== game.solution[row][col]) {
+    if (value !== game.solution[row][col]) {
+      undoStackRef.current.push({
+        row,
+        col,
+        previousValue: previous,
+        previousMistakesLeft: game.mistakesLeft,
+      });
+      setUndoCount(undoStackRef.current.length);
       mistakesLeft = Math.max(0, mistakesLeft - 1);
       lost = mistakesLeft === 0;
       setCheer(null);
@@ -304,6 +330,9 @@ function AppContent() {
         },
       });
     } else {
+      // Lock correct placements like clues so they can't be changed later.
+      nextGiven = cloneBoard(game.given);
+      nextGiven[row][col] = value;
       void playCorrect();
       track({
         name: 'cell_correct',
@@ -319,23 +348,10 @@ function AppContent() {
         col,
         boxComplete,
       });
-
-      const digitCompleted = didCompleteDigit(game.board, nextBoard, game.solution, value);
-      const wonNow = isBoardComplete(nextBoard, game.solution);
-      if (digitCompleted) {
-        track({
-          name: 'number_completed',
-          props: { mode: game.mode, digit: value, level: game.levelId, locale },
-        });
-        // Skip interstitial on the winning move so WinModal isn't buried under an ad.
-        if (!wonNow) {
-          maybeShowInterstitialOnDigitComplete();
-        }
-      }
     }
 
-    const won = !lost && value !== 0 && isBoardComplete(nextBoard, game.solution);
-    updateGame({ board: nextBoard, mistakesLeft, lost, won });
+    const won = !lost && isBoardComplete(nextBoard, game.solution);
+    updateGame({ board: nextBoard, given: nextGiven, mistakesLeft, lost, won });
   };
 
   const handleNumberPress = (value: number) => {
@@ -344,10 +360,26 @@ function AppContent() {
     updateCell(selected.row, selected.col, value);
   };
 
-  const handleErase = () => {
+  const handleUndo = () => {
     ensureMusicPlaying();
-    if (!selected || !game || game.won || game.lost) return;
-    updateCell(selected.row, selected.col, 0);
+    if (!game || game.won || game.lost) return;
+    const entry = undoStackRef.current.pop();
+    if (!entry) return;
+    setUndoCount(undoStackRef.current.length);
+
+    // Correct cells are locked into given and never enter the undo stack.
+    if (isGivenCell(game.given, entry.row, entry.col)) return;
+
+    const nextBoard = cloneBoard(game.board);
+    nextBoard[entry.row][entry.col] = entry.previousValue;
+    setSelected({ row: entry.row, col: entry.col });
+    setCheer(null);
+    void playErase();
+    updateGame({
+      board: nextBoard,
+      mistakesLeft: entry.previousMistakesLeft,
+      lost: false,
+    });
   };
 
   const onGameScreen = screen === 'game' && Boolean(game);
@@ -413,9 +445,9 @@ function AppContent() {
               paddingHorizontal: layout.pagePaddingX,
               // Clear the absolute language/mute (or back/help) chrome so home
               // content starts just below those top buttons.
-              paddingTop: onGameScreen
-                ? layout.pagePaddingY + layout.hitSize
-                : Math.max(8, layout.insets.top + 4) + layout.hitSize + 8,
+              // Absolute back/help/mute sit at insets.top — clear that chrome
+              // so the game title never slides under the question-mark control.
+              paddingTop: Math.max(8, layout.insets.top + 4) + layout.hitSize + 8,
               paddingBottom: layout.pagePaddingY + Math.max(layout.insets.bottom, 8),
               gap: layout.gap,
               // Home is top-anchored so mode/content height changes don't re-center.
@@ -494,7 +526,11 @@ function AppContent() {
 
               <NumberPad
                 onNumberPress={handleNumberPress}
-                onErase={handleErase}
+                onUndo={handleUndo}
+                canUndo={undoCount > 0 && !game.won && !game.lost}
+                promptErase={Boolean(
+                  selected && incorrectCells.has(`${selected.row}-${selected.col}`),
+                )}
                 disabledNumbers={disabledNumbers}
                 count={game.grid.size}
                 symbol={getModeConfig(game.mode).symbol}
@@ -504,6 +540,11 @@ function AppContent() {
               <GameControls
                 onNewGame={() => {
                   ensureMusicPlaying();
+                  if (game.won) {
+                    enqueueGameEndInterstitial('win');
+                  } else if (game.lost) {
+                    enqueueGameEndInterstitial('loss');
+                  }
                   startFreshGame(game.mode, game.levelId);
                 }}
               />
@@ -526,6 +567,7 @@ function AppContent() {
         }
         onPlayAgain={() => {
           if (!game) return;
+          showGameEndInterstitial('win');
           startFreshGame(game.mode, unlockedLevelId ?? game.levelId);
         }}
         onHome={goHome}
@@ -536,6 +578,7 @@ function AppContent() {
         visible={Boolean(game?.lost && screen === 'game')}
         onTryAgain={() => {
           if (!game) return;
+          showGameEndInterstitial('loss');
           startFreshGame(game.mode, game.levelId);
         }}
         onHome={goHome}

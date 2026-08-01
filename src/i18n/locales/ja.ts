@@ -32,7 +32,7 @@ const ja: TranslationTree = {
   game: {
     chances: 'チャンス',
     chancesLeft: '残り%{count}回',
-    erase: 'けす',
+    undo: 'もどす',
     newGame: '新しいゲーム',
     nice: 'いいね！',
     levelUnlocked: 'やったね！%{level}が解放された！',
@@ -69,6 +69,7 @@ const ja: TranslationTree = {
     unmute: 'ミュート解除',
     language: '言語',
     howToPlay: 'あそびかた',
+    undo: 'ひとつもどす',
   },
 };
 

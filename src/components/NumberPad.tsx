@@ -1,5 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import type { SymbolKind } from '../game/modes';
 import { useI18n } from '../i18n/I18nProvider';
 import { borders, colors, fonts, radii, shadows, spacing } from '../theme';
@@ -9,7 +11,10 @@ import { PressableScale } from './PressableScale';
 
 type Props = {
   onNumberPress: (value: number) => void;
-  onErase: () => void;
+  onUndo: () => void;
+  canUndo: boolean;
+  /** Pulse the eraser while a wrong (red) cell is selected. */
+  promptErase?: boolean;
   disabledNumbers: Set<number>;
   /** How many symbols the pad offers (matches the grid size). */
   count: number;
@@ -19,7 +24,9 @@ type Props = {
 
 export function NumberPad({
   onNumberPress,
-  onErase,
+  onUndo,
+  canUndo,
+  promptErase = false,
   disabledNumbers,
   count,
   symbol,
@@ -37,6 +44,51 @@ export function NumberPad({
   const tapSize = Math.round(buttonSize * 1.04);
   const digitSize = Math.max(13, Math.round(buttonSize * 0.4 * fontScale));
   const glyphSize = Math.round(buttonSize * 0.62);
+  const undoSize = Math.max(32, Math.round(tapSize * 0.72));
+  const undoIconSize = Math.round(undoSize * 0.62);
+
+  const pulse = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (!promptErase || !canUndo) {
+      pulse.stopAnimation();
+      pulse.setValue(0);
+      return;
+    }
+
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, {
+          toValue: 1,
+          duration: 520,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulse, {
+          toValue: 0,
+          duration: 520,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+    loop.start();
+    return () => {
+      loop.stop();
+      pulse.setValue(0);
+    };
+  }, [promptErase, canUndo, pulse]);
+
+  const eraseScale = pulse.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 1.14],
+  });
+  const ringScale = pulse.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 1.55],
+  });
+  const ringOpacity = pulse.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.45, 0],
+  });
 
   return (
     <View style={[styles.container, { maxWidth, width: '100%', gap: Math.max(spacing.sm, gap) }]}>
@@ -67,11 +119,48 @@ export function NumberPad({
           );
         })}
       </View>
-      <PressableScale onPress={onErase} style={styles.eraseButton}>
-        <Text style={[styles.eraseText, { fontSize: Math.round(16 * fontScale) }]}>
-          {t('game.erase')}
-        </Text>
-      </PressableScale>
+      <View style={[styles.undoWrap, { width: undoSize, height: undoSize }]}>
+        {promptErase && canUndo ? (
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.undoRing,
+              {
+                width: undoSize,
+                height: undoSize,
+                borderRadius: undoSize / 2,
+                opacity: ringOpacity,
+                transform: [{ scale: ringScale }],
+              },
+            ]}
+          />
+        ) : null}
+        <Animated.View style={{ transform: [{ scale: eraseScale }] }}>
+          <PressableScale
+            onPress={onUndo}
+            disabled={!canUndo}
+            accessibilityRole="button"
+            accessibilityLabel={t('a11y.undo')}
+            accessibilityState={{ disabled: !canUndo }}
+            scaleTo={0.9}
+            style={[
+              styles.undoButton,
+              {
+                width: undoSize,
+                height: undoSize,
+                opacity: canUndo ? 1 : 0.4,
+                borderColor: promptErase && canUndo ? colors.conflictText : colors.eraseBorder,
+              },
+            ]}
+          >
+            <MaterialCommunityIcons
+              name="eraser"
+              size={undoIconSize}
+              color={promptErase && canUndo ? colors.conflictText : colors.eraseText}
+            />
+          </PressableScale>
+        </Animated.View>
+      </View>
     </View>
   );
 }
@@ -116,18 +205,24 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 1,
   },
-  eraseButton: {
+  undoWrap: {
     alignSelf: 'center',
-    paddingHorizontal: 28,
-    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  undoRing: {
+    position: 'absolute',
+    borderWidth: 2,
+    borderColor: colors.conflictText,
+    backgroundColor: 'transparent',
+  },
+  undoButton: {
     borderRadius: radii.pill,
     backgroundColor: colors.eraseBg,
     borderWidth: borders.thick,
     borderColor: colors.eraseBorder,
+    alignItems: 'center',
+    justifyContent: 'center',
     ...shadows.button,
-  },
-  eraseText: {
-    fontFamily: fonts.bodyHeavy,
-    color: colors.eraseText,
   },
 });

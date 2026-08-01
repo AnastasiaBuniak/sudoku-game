@@ -123,12 +123,21 @@ function sanitizeGame(raw: unknown): PersistedGame | null {
     return null;
   }
 
+  // Freeze already-correct user fills so reloaded puzzles keep them locked.
+  const given = data.given.map((row, rowIndex) =>
+    row.map((cell, colIndex) => {
+      if (cell !== 0) return cell;
+      const value = data.board![rowIndex][colIndex];
+      return value !== 0 && value === data.solution![rowIndex][colIndex] ? value : 0;
+    }),
+  );
+
   return {
     mode: data.mode,
     levelId: data.levelId,
     grid: data.grid,
     board: data.board,
-    given: data.given,
+    given,
     solution: data.solution,
     won: Boolean(data.won),
     winCounted: Boolean(data.winCounted),

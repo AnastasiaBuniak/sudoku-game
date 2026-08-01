@@ -32,7 +32,7 @@ const zh: TranslationTree = {
   game: {
     chances: '机会',
     chancesLeft: '还剩 %{count} 次机会',
-    erase: '擦除',
+    undo: '撤销',
     newGame: '新游戏',
     nice: '太棒了！',
     levelUnlocked: '太棒了！已解锁%{level}！',
@@ -69,6 +69,7 @@ const zh: TranslationTree = {
     unmute: '取消静音',
     language: '语言',
     howToPlay: '怎么玩',
+    undo: '撤销上一步',
   },
 };
 

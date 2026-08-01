@@ -1,1 +1,6 @@
-export { initAds, maybeShowInterstitialOnDigitComplete } from './ads';
+export {
+  initAds,
+  enqueueGameEndInterstitial,
+  showGameEndInterstitial,
+  maybeShowQueuedGameEndInterstitial,
+} from './ads';

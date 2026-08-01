@@ -32,7 +32,7 @@ const es: TranslationTree = {
   game: {
     chances: 'Vidas',
     chancesLeft: '%{count} vidas restantes',
-    erase: 'Borrar',
+    undo: 'Deshacer',
     newGame: 'Nueva partida',
     nice: '¡Bien!',
     levelUnlocked: '¡Genial! Desbloqueaste %{level}!',
@@ -69,6 +69,7 @@ const es: TranslationTree = {
     unmute: 'Activar sonidos',
     language: 'Idioma',
     howToPlay: 'Cómo jugar',
+    undo: 'Deshacer el último movimiento',
   },
 };
 

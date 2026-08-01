@@ -32,7 +32,7 @@ const ar: TranslationTree = {
   game: {
     chances: 'فرص',
     chancesLeft: 'تبقى %{count} فرص',
-    erase: 'مسح',
+    undo: 'تراجع',
     newGame: 'لعبة جديدة',
     nice: 'رائع!',
     levelUnlocked: 'رائع! فتحت مستوى %{level}!',
@@ -69,6 +69,7 @@ const ar: TranslationTree = {
     unmute: 'تشغيل الصوت',
     language: 'اللغة',
     howToPlay: 'طريقة اللعب',
+    undo: 'التراجع عن الخطوة الأخيرة',
   },
 };
 

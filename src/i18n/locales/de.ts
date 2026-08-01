@@ -32,7 +32,7 @@ const de: TranslationTree = {
   game: {
     chances: 'Leben',
     chancesLeft: 'Noch %{count} Leben',
-    erase: 'Löschen',
+    undo: 'Rückgängig',
     newGame: 'Neues Spiel',
     nice: 'Toll!',
     levelUnlocked: 'Toll! %{level} freigeschaltet!',
@@ -69,6 +69,7 @@ const de: TranslationTree = {
     unmute: 'Ton an',
     language: 'Sprache',
     howToPlay: 'So geht’s',
+    undo: 'Letzten Zug rückgängig machen',
   },
 };
 

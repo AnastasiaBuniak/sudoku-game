@@ -32,7 +32,7 @@ const hi: TranslationTree = {
   game: {
     chances: 'मौके',
     chancesLeft: '%{count} मौके बचे',
-    erase: 'मिटाएँ',
+    undo: 'पूर्ववत',
     newGame: 'नया खेल',
     nice: 'शाबाश!',
     levelUnlocked: 'शाबाश! %{level} स्तर खुला!',
@@ -69,6 +69,7 @@ const hi: TranslationTree = {
     unmute: 'आवाज़ चालू करें',
     language: 'भाषा',
     howToPlay: 'कैसे खेलें',
+    undo: 'पिछली चाल पूर्ववत करें',
   },
 };
 

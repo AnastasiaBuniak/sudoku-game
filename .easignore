@@ -1,0 +1,95 @@
+# EAS Build uses this file INSTEAD of .gitignore, so it must repeat everything
+# there. Learn more https://docs.expo.dev/build-reference/easignore/
+
+# --- mirrored from .gitignore ---
+
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.cer
+*.certSigningRequest
+
+# Metro
+.metro-health-check*
+
+# debug / logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+*.log
+logs/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+*.pem
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# local env files
+.env
+.env.*
+!.env.example
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+# testing / coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# editors / IDEs
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+*.swo
+*~
+
+# generated native folders (CNG / prebuild)
+/ios
+/android
+
+# Expo / EAS
+*.ipa
+*.apk
+*.aab
+eas-hooks/
+
+# caches
+.cache/
+.turbo/
+*.tmp
+*.temp
+
+# --- build-only exclusions (not shipped to the builder) ---
+
+# store listing artwork, screenshots and copy
+store/
+docs/
+
+# scratch virtualenv used for image resizing
+.tmp-img-venv/

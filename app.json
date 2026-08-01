@@ -7,11 +7,6 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "scheme": "gummysudoku",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#F3E9FF"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gummysudoku.app",
@@ -36,12 +31,24 @@
     },
     "plugins": [
       [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#F3E9FF",
+          "imageWidth": 200
+        }
+      ],
+      [
         "react-native-google-mobile-ads",
         {
           "androidAppId": "ca-app-pub-7343052448319099~9796790465",
           "iosAppId": "ca-app-pub-3940256099942544~1458002511"
         }
-      ]
+      ],
+      "expo-asset",
+      "expo-audio",
+      "expo-status-bar"
     ],
     "extra": {
       "eas": {

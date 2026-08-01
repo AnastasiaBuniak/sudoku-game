@@ -34,7 +34,7 @@ export type TranslationTree = {
   game: {
     chances: string;
     chancesLeft: string;
-    erase: string;
+    undo: string;
     newGame: string;
     nice: string;
     levelUnlocked: string;
@@ -72,6 +72,7 @@ export type TranslationTree = {
     unmute: string;
     language: string;
     howToPlay: string;
+    undo: string;
   };
 };
 

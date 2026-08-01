@@ -3,6 +3,14 @@ export async function initAds(): Promise<void> {
   return;
 }
 
-export function maybeShowInterstitialOnDigitComplete(): void {
+export function enqueueGameEndInterstitial(_outcome: 'win' | 'loss'): void {
+  return;
+}
+
+export function showGameEndInterstitial(_outcome: 'win' | 'loss'): void {
+  return;
+}
+
+export function maybeShowQueuedGameEndInterstitial(): void {
   return;
 }

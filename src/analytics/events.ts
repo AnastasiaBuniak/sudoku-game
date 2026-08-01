@@ -1,7 +1,7 @@
 import type { GameMode } from '../game/modes';
 import type { LocaleCode } from '../i18n/types';
 
-export type AdPlacement = 'digit_complete';
+export type AdPlacement = 'post_win' | 'queued_win' | 'post_loss' | 'queued_loss';
 export type AdFormat = 'interstitial';
 
 /** Anonymous product events only — no user IDs or device advertising IDs. */
@@ -28,10 +28,6 @@ export type AnalyticsEvent =
         locale: LocaleCode;
         chances_left: number;
       };
-    }
-  | {
-      name: 'number_completed';
-      props: { mode: GameMode; digit: number; level: string; locale: LocaleCode };
     }
   | {
       name: 'ad_show_requested';
