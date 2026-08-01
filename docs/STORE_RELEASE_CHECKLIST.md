@@ -18,7 +18,7 @@ Target: **general Puzzle**, age **4+**, no Kids Category. **Contains ads** (AdMo
 5. After a minute, open:
    `https://anastasiabuniak.github.io/sudoku-game/`
 6. Use that URL in App Store Connect + Play Console
-7. Contact email: `visadayscalculator@gmail.com` (also use in store listing support/privacy contacts)
+7. Contact email: `anastasiia.melnychek@gmail.com` (also use in store listing support/privacy contacts)
 
 ## Your actions (required)
 1. **PostHog** — confirm `.env` has API key; events visible in Live feed

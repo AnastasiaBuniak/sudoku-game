@@ -53,6 +53,40 @@ async function clickText(page, text, options = {}) {
   await page.waitForTimeout(600);
 }
 
+/** Dismiss How-to-play overlay if it appears on first game. */
+async function dismissHowToPlay(page) {
+  const gotIt = page.getByText(/got it/i).first();
+  try {
+    await gotIt.waitFor({ state: 'visible', timeout: 4_000 });
+    await gotIt.click();
+    await page.waitForTimeout(500);
+  } catch {
+    // Already seen / not shown
+  }
+}
+
+async function waitForGameReady(page) {
+  await page.waitForTimeout(1200);
+  await dismissHowToPlay(page);
+  await Promise.race([
+    page.getByText(/chances/i).first().waitFor({ timeout: 20_000 }),
+    page.getByLabel(/undo/i).first().waitFor({ timeout: 20_000 }),
+  ]).catch(() => {});
+  await page.waitForTimeout(800);
+}
+
+async function goHome(page) {
+  await dismissHowToPlay(page);
+  const back = page.getByLabel(/back|home/i).first();
+  if (await back.count()) {
+    await back.click({ force: true });
+  } else {
+    await page.goto(BASE, { waitUntil: 'networkidle' });
+    await page.getByText('Gummy Sudoku').first().waitFor();
+  }
+  await page.waitForTimeout(800);
+}
+
 async function captureFlow(context, vp) {
   const outDir = join(ROOT, vp.dir);
   mkdirSync(outDir, { recursive: true });
@@ -78,34 +112,15 @@ async function captureFlow(context, vp) {
 
   // 3) Start Animals game (Cubs / Play)
   await clickText(page, 'Play');
-  await page.waitForTimeout(1200);
-  // Game screen usually shows "Chances" or erase
-  await Promise.race([
-    page.getByText(/chances/i).first().waitFor({ timeout: 20_000 }),
-    page.getByText('Erase').first().waitFor({ timeout: 20_000 }),
-  ]).catch(() => {});
-  await page.waitForTimeout(800);
+  await waitForGameReady(page);
   await shot('03-game-animals');
 
   // 4) Back home, switch to Numbers, play Easy
-  const back = page.getByLabel(/back|home/i).first();
-  if (await back.count()) {
-    await back.click();
-  } else {
-    // Fallback: reload to home
-    await page.goto(BASE, { waitUntil: 'networkidle' });
-    await page.getByText('Gummy Sudoku').first().waitFor();
-  }
-  await page.waitForTimeout(800);
+  await goHome(page);
   await clickText(page, 'Numbers');
   await clickText(page, 'Easy');
   await clickText(page, 'Play');
-  await page.waitForTimeout(1200);
-  await Promise.race([
-    page.getByText(/chances/i).first().waitFor({ timeout: 20_000 }),
-    page.getByText('Erase').first().waitFor({ timeout: 20_000 }),
-  ]).catch(() => {});
-  await page.waitForTimeout(800);
+  await waitForGameReady(page);
   await shot('04-game-numbers');
 
   await page.close();

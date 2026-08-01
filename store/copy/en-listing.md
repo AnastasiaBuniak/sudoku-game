@@ -24,10 +24,10 @@ Soft puzzles for kids
 **Google Play short description** (max 80 characters):
 
 ```
-Cute candy Sudoku for kids—numbers & animals, occasional ads.
+Cute candy Sudoku for kids—numbers & animals, gentle levels, occasional ads.
 ```
 
-Character count: 61 / 80
+Character count: 76 / 80
 
 ---
 
@@ -45,19 +45,20 @@ Candy-bright Sudoku for little puzzlers. Start with cute animals, grow into clas
 Gummy Sudoku is a soft, candy-themed Sudoku game for kids and families. Bright colors, gentle feedback, and two playful modes make classic logic puzzles feel friendly from the first tap.
 
 TWO WAYS TO PLAY
-• Animals — begin with tiny 4×4 boards and adorable animal friends (perfect for younger kids)
-• Numbers — classic Sudoku with Easy through Master levels as skills grow
+• Animals — start with tiny 4×4 boards and adorable animal friends, then grow into 6×6 (Cubs → Meadow → Forest → Jungle)
+• Numbers — classic 9×9 Sudoku from Easy through Master as skills grow
 
 MADE FOR LITTLE HANDS & BIG BRAINS
 • Clear, colorful boards that are easy to read
-• Helpful chances so mistakes feel safe, not scary
+• Three helpful chances so mistakes feel safe, not scary
 • Level unlocks that reward progress
 • Soft sounds you can mute anytime
+• How-to-play tips on the first puzzle
 • Play in 8 languages: English, Chinese, Hindi, Spanish, Arabic, Japanese, German, and French
 
 CALM & KID-FRIENDLY
 • No accounts required
-• Occasional full-screen ads at natural breaks in play
+• Occasional full-screen ads after a win or game over (never covering the win moment)
 • Progress saved on your device
 • Designed for ages 4+ as a general Puzzle app for the whole family
 
@@ -86,7 +87,7 @@ Welcome to Gummy Sudoku! Soft candy Sudoku with Animals and Numbers modes, gentl
 
 ## Support & privacy contacts
 
-- Support / privacy email: `visadayscalculator@gmail.com`
+- Support / privacy email: `anastasiia.melnychek@gmail.com`
 - Privacy policy URL: `https://anastasiabuniak.github.io/sudoku-game/`
 
 ---
@@ -98,6 +99,6 @@ Welcome to Gummy Sudoku! Soft candy Sudoku with Animals and Numbers modes, gentl
 | Primary category | Games → Puzzle |
 | Secondary (Apple, optional) | Games → Family / Education |
 | Content rating | 4+ (Apple) / Everyone (Google, typically) |
-| Ads | Yes — occasional interstitial (AdMob) |
+| Ads | Yes — occasional interstitial after win/loss (AdMob) |
 | In-app purchases | No |
 | Data collection | Anonymous product analytics (PostHog) + advertising (AdMob); see privacy policy |
