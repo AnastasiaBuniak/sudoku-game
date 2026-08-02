@@ -7,8 +7,6 @@ Bright pastel boards, gentle feedback, and two playful modes turn classic logic 
 <p align="center">
   <img src="store/screenshots/iphone/iphone-6.7-01-home-numbers.png" alt="Home — Numbers mode" width="220" />
   &nbsp;
-  <img src="store/screenshots/iphone/iphone-6.7-02-home-animals.png" alt="Home — Animals mode" width="220" />
-  &nbsp;
   <img src="store/screenshots/iphone/iphone-6.7-03-game-animals.png" alt="Animals puzzle" width="220" />
   &nbsp;
   <img src="store/screenshots/iphone/iphone-6.7-04-game-numbers.png" alt="Numbers puzzle" width="220" />
@@ -37,10 +35,6 @@ Gummy Sudoku is a kid-friendly puzzle app with a gummy/candy look: soft gradient
 - Occasional interstitial ads after a win or game over (never over the celebration moment)
 
 ## Screenshots
-
-| Home (Numbers) | Home (Animals) | Animals board | Numbers board |
-| --- | --- | --- | --- |
-| ![Home Numbers](store/screenshots/iphone/iphone-6.7-01-home-numbers.png) | ![Home Animals](store/screenshots/iphone/iphone-6.7-02-home-animals.png) | ![Animals game](store/screenshots/iphone/iphone-6.7-03-game-animals.png) | ![Numbers game](store/screenshots/iphone/iphone-6.7-04-game-numbers.png) |
 
 More store assets (Android / iPad) live under [`store/screenshots/`](./store/screenshots/).
 
