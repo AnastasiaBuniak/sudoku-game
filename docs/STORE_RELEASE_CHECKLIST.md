@@ -16,7 +16,7 @@ Target: **general Puzzle**, age **4+**, no Kids Category. **Contains ads** (AdMo
    - Website: `https://gummy-sudoku.netlify.app/`
    - Privacy: `https://gummy-sudoku.netlify.app/privacy.html`
 3. Use the privacy URL in App Store Connect + Play Console; website URL for store contact
-4. Contact email: `hello.gummy.sudoku@gmail.com` (also use in store listing support/privacy contacts)
+4. Contact email: `gummysudoku@gmail.com` (also use in store listing support/privacy contacts)
 
 ## Your actions (required)
 1. **PostHog** — confirm `.env` has API key; events visible in Live feed

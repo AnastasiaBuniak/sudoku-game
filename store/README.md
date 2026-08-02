@@ -38,7 +38,7 @@ Ready-to-upload files for **App Store Connect** and **Google Play Console**.
 - Category: **Games → Puzzle**
 - Age: **4+** (general audience — not Kids Category)
 - Ads: **Yes** (occasional interstitial after win/loss via AdMob)
-- Support email: `hello.gummy.sudoku@gmail.com`
+- Support email: `gummysudoku@gmail.com`
 - Website: `https://gummy-sudoku.netlify.app/` (source: `docs/index.html`)
 - Privacy policy: `https://gummy-sudoku.netlify.app/privacy.html` (source: `docs/privacy.html`)
 
